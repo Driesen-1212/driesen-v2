@@ -892,16 +892,11 @@
        改成：在手势栈里新建一个从未静音起播过的元素，直接带声 play()。
        这是各端兼容性最稳的一条路（等于「点一下开始放背景音乐」）。 */
     let armed = false;
-    const enterAudible = () => new Promise(resolve => {
-      armed = true;
 
-      /* 微信 X5：先跟桥打个招呼，部分版本不做这一步解码器不放开 */
-      try {
-        if (window.WeixinJSBridge && window.WeixinJSBridge.invoke) {
-          window.WeixinJSBridge.invoke('getNetworkType', {}, () => {});
-        }
-      } catch (_) {}
-
+    /* 手势内新建一个「从未静音起播过」的元素，直接带声 play()。
+       iOS Safari / 微信 X5 会把「先静音播、再取消静音」强制掐掉，
+       所以那条路必须靠新建元素兜住；代价是 bgm 要重新下载一次。 */
+    const audibleViaNewElement = resolve => {
       let el = null;
       try {
         /* 依旧用 video 承载 mp3：移动内核里 video 的播放权限比 audio 宽 */
@@ -946,7 +941,9 @@
           resolve(true);
           return;
         }
-        if (++n >= 3) {                       // 真出不来 → 回静音基线 + 兜底手势
+        /* 新建元素要重新下载 2.3MB 的 bgm，移动网络下 1 秒往往不够，
+           所以重试窗口放宽到约 3.6 秒，别把「还在缓冲」误判成失败 */
+        if (++n >= 12) {                     // 真出不来 → 回静音基线 + 兜底手势
           try { target.pause(); } catch (_) {}
           if (target !== audio) { try { target.remove(); } catch (_) {} }
           audio.muted = true;
@@ -957,15 +954,58 @@
           return;
         }
         pull();
-        setTimeout(settle, 240);
+        setTimeout(settle, 300);
       };
       setTimeout(settle, 300);
+    };
+
+    const enterAudible = () => new Promise(resolve => {
+      armed = true;
+
+      /* 微信 X5：先跟桥打个招呼，部分版本不做这一步解码器不放开 */
+      try {
+        if (window.WeixinJSBridge && window.WeixinJSBridge.invoke) {
+          window.WeixinJSBridge.invoke('getNetworkType', {}, () => {});
+        }
+      } catch (_) {}
+
+      /* ---- 快路径：直接把「已经静音在播」的那个元素取消静音 ----
+         有进入画面时 initAudio 已经做过静音预跑：此刻它正在播、也已缓冲了一部分。
+         在手势里把 muted 关掉就能立刻出声 —— 既不用新建元素，
+         也不用重新下载 2.3MB 的 bgm。Android（vivo / iQOO / 华为 / 小米）
+         与桌面走这条最稳、最快。（已在播时不能再 play()，
+         Chrome 会判成 AbortError，反而被误判成失败） */
+      if (!audio.paused) {
+        const t0 = audio.currentTime;
+        audio.muted = false;
+        if (VOL_WRITABLE) audio.volume = 0;  // 交给 markAudible 淡入到 TARGET
+        setTimeout(() => {
+          /* 内核若打算掐，通常 1 秒内就会动手；这里等满 1 秒再判。
+             「时间往前走了」或「已缓冲到可播放」任一成立都算出声成功 */
+          const advanced = audio.currentTime > t0 + 0.05;
+          const live = !audio.paused && !audio.muted && (advanced || audio.readyState >= 3);
+          if (live) { markAudible(); resolve(true); return; }
+          /* 被内核掐掉（iOS 上常见）→ 救回静音基线，再走新建元素那条路 */
+          audio.muted = true;
+          if (VOL_WRITABLE) audio.volume = 0;
+          try { const rp = audio.play(); if (rp && rp.catch) rp.catch(() => {}); } catch (_) {}
+          refresh();
+          audibleViaNewElement(resolve);
+        }, 1000);
+        return;
+      }
+
+      /* 静音预跑都没起来（省电 / 流量模式拦了预加载）→ 直接走新建元素 */
+      audibleViaNewElement(resolve);
     });
 
     /* 供进入画面直接调用：点击回调里第一件事就是它，
        保证仍在用户手势的同一个任务里，不被后续 DOM 操作挤出手势栈 */
     window.__bgmEnter = () => enterAudible().then(ok => {
-      if (!ok) { showNudge(); bindUnlock(); }
+      if (!ok) showNudge();
+      /* 成败都兜一层：进站后第一次交互一定出声
+         （已经出声时 markAudible 会把它自动解绑，无副作用） */
+      bindUnlock();
     });
 
     /* 没走 __bgmEnter 的旧入口也兜一层；已经出声就不重复建元素 */
