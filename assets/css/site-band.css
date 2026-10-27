@@ -1,0 +1,66 @@
+/* ============================================================
+   site-band.css — 章节滚动横幅（描边巨字）
+   ------------------------------------------------------------
+   每个 .section 开头一条横贯视口的字带，无限左移。
+   文字取自该章节的 .eyebrow（"01 — ABOUT" → "ABOUT"），
+   也可以在 <section data-band="CUSTOM TEXT"> 上自己指定。
+
+   独立性：不依赖 main.js / motion.css / site-color.js。
+   删掉这个文件和 index.html 里两行引用即可完全移除。
+   ============================================================ */
+
+.band {
+  position: relative;
+  overflow: hidden;
+  height: clamp(56px, 8.2vw, 104px);
+  margin-bottom: 44px;
+  /* 从容器里挣脱出来，横贯整个视口 —— 像一块章节隔断 */
+  margin-inline: calc(50% - 50vw);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  /* 两端渐隐，字从边上淡入淡出，不是硬切 */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+}
+
+.band-track {
+  display: flex;
+  width: max-content;
+  height: 100%;
+  /* JS 按「恒速 62px/s」算出时长写进 --dur；改宽度时不会突然变快变慢 */
+  animation: band-run var(--dur, 46s) linear infinite;
+}
+
+.band-run {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.band-run span {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(38px, 7vw, 92px);
+  line-height: 1;
+  letter-spacing: .012em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding-right: .36em;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--line-strong);
+}
+
+/* 奇偶交替：描边 / 极淡实心。带子跟着章节换色，实心那半会沾上当前强调色 */
+.band-run span:nth-child(even) {
+  color: color-mix(in srgb, var(--accent) 15%, transparent);
+  -webkit-text-stroke: 0;
+}
+
+@keyframes band-run {
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+/* 离屏时由 JS 设 animationPlayState=paused，这里只管「不动就彻底不动」 */
+@media (prefers-reduced-motion: reduce) {
+  .band-track { animation: none; }
+}
