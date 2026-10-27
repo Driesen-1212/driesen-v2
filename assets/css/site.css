@@ -1468,8 +1468,9 @@ html.gate-lock .boot { animation-play-state: paused; }
   .sec-desc { font-size: 14px; line-height: 1.85; }
   .eyebrow { font-size: 9px; letter-spacing: 2px; }
 
-  /* 首屏：不再满屏留白，黑胶回到按钮下方 */
-  .hero { min-height: auto; }
+  /* 首屏：手机端填满一屏（100svh 避开地址栏跳动），
+     否则首屏太矮、下一屏的头像会露在首屏底部 */
+  .hero { min-height: 100svh; }
   .hero-inner { grid-template-columns: 1fr; gap: 34px; padding-block: 104px 56px; }
   .display { font-size: clamp(54px, 16vw, 74px); margin-bottom: 16px; }
   .hero-line { font-size: 16px; line-height: 1.8; min-height: 3.6em; margin-bottom: 24px; }
