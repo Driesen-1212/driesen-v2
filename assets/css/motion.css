@@ -1,0 +1,323 @@
+/* ============================================================
+   motion.css — 电影剧场版（大改）
+   五个层次，全部零依赖、零额外请求：
+   1. 色彩流转   每章一套氛围光 + 强调色，滚动时交叉淡出
+   2. 巨型水印   26vw 描边章节号，静止
+   3. （已删）   右侧章节轨道 —— 用户否掉了，别再捡回来
+   4. 匀速描边带 恒速跑马灯，滚动不改变它的速度
+   5. 幕次揭幕   行级上翻 + 扫光
+
+   ⚠️ 2026-10-26：所有「惯性」已删除。页面里不存在任何
+   「元素位移与滚动反向」的写法，也不读滚动速度。
+   动效只发生在两个时刻：进入视口的那一次、章节切换的那一次。
+
+   本文件只在 site.css 之后覆盖；删掉它 + index.html 一行引用即可完全回滚。
+   ============================================================ */
+
+/* ---------- 0. 铺底：让负层级的光晕层有地方站 ---------- */
+body {
+  position: relative;
+  z-index: 0;
+  /* 底色不再靠 transition：--bg 已由 JS 逐帧插值，
+     这里再加一层过渡只会让 body 比卡片慢半拍，反而更像两块底 */
+}
+
+/* ---------- 1. 色彩流转 ---------- */
+.m-flow {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.m-flow i {
+  position: absolute;
+  inset: -12%;              /* 留边缘余量：光斑本身是柔的，边缘不会露硬线 */
+  opacity: 0;
+  will-change: opacity;
+}
+.m-flow i.on { opacity: 1; }
+
+/* 8 站氛围光。色相跨度保留，但**每层的两枚光斑必须落在同一个 x**：
+   上斑固定 y=4%、下斑固定 y=94%，只有颜色不同。
+   原来每章亮斑在左上、暗斑在右下，方向还各不相同 —— 两章交叉淡出时，
+   画面上半是上一章的颜色、下半是下一章的颜色，实测上下差 16 个色阶，
+   看上去就是「整页被切成两块」。对齐之后这个差值归零，只剩整屏一起变色。 */
+.m-flow i:nth-child(1) {
+  background:
+    radial-gradient(58% 48% at 38% 4%, rgba(78, 100, 255, .38), transparent 64%),
+    radial-gradient(64% 52% at 38% 94%, rgba(26, 40, 150, .40), transparent 68%);
+}
+.m-flow i:nth-child(2) {
+  background:
+    radial-gradient(58% 48% at 62% 4%, rgba(198, 126, 52, .32), transparent 64%),
+    radial-gradient(64% 52% at 62% 94%, rgba(92, 44, 16, .38), transparent 68%);
+}
+.m-flow i:nth-child(3) {
+  background:
+    radial-gradient(58% 48% at 44% 4%, rgba(46, 156, 198, .28), transparent 64%),
+    radial-gradient(64% 52% at 44% 94%, rgba(10, 62, 92, .42), transparent 68%);
+}
+.m-flow i:nth-child(4) {
+  background:
+    radial-gradient(58% 48% at 50% 4%, rgba(140, 142, 158, .15), transparent 64%),
+    radial-gradient(64% 52% at 50% 94%, rgba(28, 28, 36, .48), transparent 68%);
+}
+.m-flow i:nth-child(5) {
+  background:
+    radial-gradient(58% 48% at 58% 4%, rgba(150, 76, 228, .34), transparent 64%),
+    radial-gradient(64% 52% at 58% 94%, rgba(56, 14, 96, .42), transparent 68%);
+}
+.m-flow i:nth-child(6) {
+  background:
+    radial-gradient(58% 48% at 40% 4%, rgba(44, 148, 110, .28), transparent 64%),
+    radial-gradient(64% 52% at 40% 94%, rgba(10, 58, 44, .42), transparent 68%);
+}
+.m-flow i:nth-child(7) {
+  background:
+    radial-gradient(58% 48% at 60% 4%, rgba(206, 154, 58, .30), transparent 64%),
+    radial-gradient(64% 52% at 60% 94%, rgba(86, 58, 14, .42), transparent 68%);
+}
+.m-flow i:nth-child(8) {
+  background:
+    radial-gradient(58% 48% at 50% 4%, rgba(78, 100, 255, .32), transparent 64%),
+    radial-gradient(64% 52% at 50% 94%, rgba(20, 30, 120, .42), transparent 68%);
+}
+
+/* 暗角 + 极细颗粒：电影感的一半来自压边 */
+.m-flow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(118% 88% at 50% 46%, transparent 38%, rgba(0, 0, 0, .58) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.32'/%3E%3C/svg%3E");
+  background-size: cover, 120px 120px;
+  opacity: .9;
+  mix-blend-mode: multiply;
+}
+
+/* ---------- 2. 巨型章节水印 ---------- */
+.section {
+  position: relative;
+  isolation: isolate;
+  /* 只裁横向：水印视差会往右走出边界（手机上尤其明显），
+     纵向必须留着，否则卡片的 hover 阴影会被切掉 */
+  overflow-x: clip;
+}
+.m-ghost {
+  position: absolute;
+  /* 必须落在描边带下方：section 的 padding-top 是 15vh，带子紧接其后，
+     水印从 140px 起会正好压在带子上，看着像被划了一刀 */
+  top: 250px;
+  right: 7vw;
+  z-index: 0;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(150px, 27vw, 430px);
+  line-height: .78;
+  letter-spacing: -.05em;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--line);
+  opacity: .5;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+.m-ghost em {
+  /* 水印只留章节号，英文名不重复挂一份，否则描边会和标题叠成重影 */
+  display: none;
+}
+.section > .container { position: relative; z-index: 1; }
+
+/* ---------- 3. 右侧章节轨道（已删除） ---------- */
+/* 2026-10-26：用户明确不要这排「短横线 + 当前章名」。节点由 JS 注入的那份
+   已经拆掉，这里整块 CSS 一并删除，别只留 display:none —— 免得下次有人翻出来又打开 */
+
+/* ---------- 4. 行级揭幕 ---------- */
+.m-line { --step: 62ms; }
+
+.m-ch { display: inline-block; white-space: pre; }
+.m-ch-el { display: inline-block; }
+
+.m-line .ln {
+  display: block;
+  overflow: hidden;
+  padding-bottom: .16em;
+  margin-bottom: -.16em;
+}
+.m-line .ln-in {
+  display: block;
+  white-space: nowrap;
+  transition:
+    transform .62s var(--ease),
+    opacity .34s var(--ease);
+  transition-delay: calc(var(--i, 0) * var(--step));
+}
+html.m-ready .m-line .ln-in {
+  transform: translateY(118%) skewY(1.4deg);
+  opacity: 0;
+}
+html.m-ready .m-line.is-in .ln-in {
+  transform: none;
+  opacity: 1;
+}
+
+/* ---------- 5. 描边滚动带 ---------- */
+.m-band {
+  position: relative;
+  overflow: hidden;
+  height: clamp(50px, 7vw, 92px);
+  margin-bottom: 34px;
+  margin-inline: calc(50% - 50vw);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.m-band-track {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  white-space: nowrap;
+  will-change: transform;
+  animation: m-band-run 26s linear infinite;
+}
+/* 桌面端由 JS 接管跑马灯：恒速，与 CSS 动画同速。
+   这里保留 CSS 动画作为手机端 / 无 JS 时的兜底 */
+.m-band-track.m-js { animation: none; }
+.m-band-track span {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(42px, 7.4vw, 96px);
+  line-height: 1;
+  letter-spacing: .015em;
+  text-transform: uppercase;
+  padding-right: .32em;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--line-strong);
+}
+@keyframes m-band-run {
+  to { transform: translate3d(-33.3333%, 0, 0); }
+}
+
+/* ---------- 6. 幕次扫光 ---------- */
+.sec-head { position: relative; }
+.sec-head::after {
+  content: "";
+  position: absolute;
+  top: -30%;
+  left: -22%;
+  width: 30%;
+  height: 170%;
+  background: linear-gradient(100deg, transparent, var(--accent-soft), transparent);
+  transform: skewX(-16deg);
+  opacity: 0;
+  pointer-events: none;
+}
+.sec-head.m-lit::after { animation: m-sweep 1.15s cubic-bezier(.3, .9, .2, 1) .12s 1; }
+@keyframes m-sweep {
+  0%   { opacity: 0; left: -26%; }
+  22%  { opacity: .9; }
+  100% { opacity: 0; left: 108%; }
+}
+
+/* ---------- 7. 视差承载（已全部关闭） ---------- */
+/* 2026-10-26：内容层视差撤干净了。曾经这里靠 --drift 让区块跟页面错开走，
+   效果是「往上滑，区块往下退」—— 手感上像页面在跟你反着使劲。
+   现在 .reveal 只有入场位移，进到位就彻底静止，跟页面 1:1。
+   段位注释保留，方便想恢复的人知道原来挂在哪 */
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 34px, 0);
+  transition:
+    opacity .48s var(--ease),
+    transform .56s var(--ease);
+  transition-delay: calc(var(--i, 0) * 46ms);
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- 8. 标题进档 + 数字海报化 ---------- */
+.section .h2 {
+  font-size: clamp(34px, 5.6vw, 68px);
+  line-height: 1.08;
+  letter-spacing: -.024em;
+  max-width: 11em;
+  margin-bottom: 28px;
+}
+#selected-work .stat { padding: 48px 34px 42px; }
+#selected-work .stat b {
+  font-size: clamp(54px, 7.2vw, 104px);
+  letter-spacing: -.012em;
+  margin-bottom: 14px;
+}
+
+/* ---------- 9. 英雄区（不再吃位移） ---------- */
+.hero-inner { will-change: opacity; }
+
+/* ---------- 9b. 卡片透光 ---------- */
+/* 原站这些格子用 var(--bg) 铺底，与页面同色时看不出问题；
+   但底层一旦有氛围光，不透明底色会把光整块挡成死色斑。
+   改成极淡玻璃 + 容器去掉色底，格子之间靠 1px 缝分隔，光能穿过去 */
+.trio, .stats, .work-grid { background: transparent; }
+.tile, .stat, .work, .channel { background: rgba(236, 234, 226, .032); }
+.tile:hover, .work:hover, .channel:hover { background: rgba(21, 23, 29, .78); }
+.meta-strip li { background: rgba(236, 234, 226, .028); }
+.album-shelf, .qr-card { background: rgba(21, 23, 29, .70); }
+
+/* ---------- 10. 图片质感 ---------- */
+/* 注意：摄影集的暗场显影不能在这里做 —— coverflow 自己用 inline opacity
+   按离中心的距离压暗（最低 0.22），再叠一层 filter 会把所有照片压死。
+   当初写 :not(.is-active) 更是全错，那个类名根本不存在 */
+@media (hover: hover) and (pointer: fine) {
+  .portrait-card img { transition: filter .55s var(--ease), transform .9s var(--ease); }
+  .portrait-card:hover img { filter: brightness(1.06) contrast(1.03); }
+
+  .frame img, .film-grid img { transition: filter .6s var(--ease), transform 1s var(--ease); }
+  .frame:hover img, .film-grid figure:hover img { filter: brightness(1.08) saturate(1.05); transform: scale(1.03); }
+}
+
+/* ---------- 11. 小屏降级 ---------- */
+@media (max-width: 860px) {
+  .m-line { --step: 46ms; }
+  html.m-ready .m-line .ln-in { transform: translateY(112%); }
+  .reveal { transition-delay: calc(var(--i, 0) * 34ms); }
+  .m-band { height: clamp(40px, 12vw, 64px); }
+  .m-band-track span { font-size: clamp(36px, 12vw, 60px); }
+  /* 手机上 6% 的渐隐只有二十几像素，压不住词的一半，看着像被硬切下来的；
+     拉到 16% 让首尾字母完整地淡出 */
+  .m-band {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 16%, #000 84%, transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 16%, #000 84%, transparent);
+  }
+  .m-ghost {
+    font-size: clamp(110px, 34vw, 190px);
+    top: 195px;
+    right: -2vw;
+    opacity: .42;
+  }
+  .m-ghost em { display: none; }
+  .section .h2 { font-size: clamp(30px, 8.4vw, 46px); max-width: none; }
+  .m-flow i { inset: -6%; }
+
+  /* 手机上 26px 的自我介绍会折成五行（中英文混排太宽），
+     拆行后每组一折就散了，收一档让它回到三行 */
+  .about-line { font-size: 24px; }
+  .about-line .al-cn { font-size: .54em; letter-spacing: 1px; margin-left: 6px; }
+}
+
+/* ---------- 12. 无障碍 / 打印 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html.m-ready .m-line .ln-in { transform: none !important; opacity: 1 !important; transition: none !important; }
+  .m-band-track { animation: none; }
+  .sec-head.m-lit::after { animation: none; }
+  .m-ghost { display: none; }
+  .m-flow i { transition: none; }
+}
+@media print {
+  .m-band, .m-ghost, .m-flow { display: none; }
+  html.m-ready .m-line .ln-in { transform: none; opacity: 1; }
+}

@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark" class="gate-lock">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Driesen | Photography · Product · AIGC</title>
+<meta name="description" content="Driesen — photographer, product developer, studio founder. Photography, product development and image generation." />
+<meta property="og:title" content="Driesen | Photography · Product · AIGC" />
+<meta property="og:description" content="Shoot, build, generate." />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="theme-color" content="#f5f5f5" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Caveat:wght@400;500&family=JetBrains+Mono:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230e0f13'/%3E%3Ctext x='16' y='22' font-family='Georgia,serif' font-size='18' fill='%236a86ff' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E" />
+<link rel="stylesheet" href="assets/css/site.css?v=20261028a" />
+<link rel="stylesheet" href="assets/css/motion.css?v=20261028a" />
+<noscript><style>
+  html.gate-lock { overflow: auto !important; }
+  .gate { display: none !important; }
+  .boot { animation: none !important; opacity: 1 !important; transform: none !important; }
+</style></noscript>
+</head>
+
+<body>
+<!-- ============ 进入画面 ============ -->
+<div class="gate" id="gate">
+  <div class="gate-inner">
+    <p class="gate-eyebrow">Portfolio · 2026</p>
+    <p class="gate-mark">Driesen</p>
+    <p class="gate-sub">摄影 <i>·</i> 产品开发 <i>·</i> 图像生成</p>
+  </div>
+
+  <button class="gate-enter" id="gateEnter" type="button">
+    <span class="ge-ring"><span class="ge-play"></span></span>
+    <span class="ge-label">进入<em>Enter</em></span>
+  </button>
+</div>
+
+<a class="skip" href="#hero">跳到主要内容</a>
+
+<!-- 滚动进度 -->
+<div class="progress" aria-hidden="true"><i id="progressBar"></i></div>
+
+<!-- ============ NAV ============ -->
+<header class="nav" id="nav">
+  <div class="nav-inner">
+    <a class="brand" href="#hero">
+      <span class="brand-en">DRIESEN</span>
+    </a>
+
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu" aria-label="打开导航菜单">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav class="nav-menu" id="navMenu" aria-label="主导航">
+      <a href="#about" data-nav>ABOUT</a>
+      <a href="#selected-work" data-nav>WORK</a>
+      <a href="#photography" data-nav>PHOTOGRAPHY</a>
+      <a href="#aigc" data-nav>AIGC</a>
+      <a href="#imprint" data-nav>IMPRINT SKILL</a>
+      <a href="#studio" data-nav>STUDIO</a>
+      <a class="nav-cta" href="#contact" data-nav>CONTACT</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="hero">
+  <div class="container hero-inner">
+    <div class="hero-copy">
+      <p class="eyebrow boot" style="--b:0s">PORTFOLIO · 2026</p>
+      <h1 class="display boot" style="--b:.08s">Driesen</h1>
+      <p class="hero-line boot" style="--b:.18s">
+        <span id="typed"></span><span class="caret" id="caret">|</span>
+      </p>
+      <div class="hero-actions boot" style="--b:.28s">
+        <a class="btn btn-primary" href="#selected-work">VIEW WORK <span>↓</span></a>
+        <a class="btn" href="#contact">CONTACT <span>→</span></a>
+      </div>
+    </div>
+
+    <div class="hero-visual boot" style="--b:.2s">
+      <button class="vinyl" id="vinyl" aria-label="播放 / 暂停背景音乐" aria-pressed="false">
+        <span class="vinyl-disc">
+          <span class="vinyl-grooves"></span>
+          <span class="vinyl-label">
+            <span class="vl-cn">Driesen</span>
+            <span class="vl-en">NOW PLAYING</span>
+          </span>
+          <span class="vinyl-hole"></span>
+        </span>
+        <span class="vinyl-arm"></span>
+      </button>
+      <p class="vinyl-meta"><span id="vinylState">PLAYING</span> · BGM 01 · 04:18</p>
+      <video id="bgm" class="bgm-media" src="assets/audio/bgm.mp3" preload="auto" loop muted autoplay playsinline webkit-playsinline disablepictureinpicture></video>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 01 ABOUT ============ -->
+<section class="section" id="about">
+  <div class="container">
+    <div class="sec-head">
+      <p class="eyebrow reveal">01 — ABOUT</p>
+    </div>
+
+    <!-- 自我介绍：照片 + 自述 -->
+    <div class="portrait-grid">
+      <figure class="portrait-card reveal" style="--d:.08s">
+        <span class="p-ring"></span>
+        <img src="assets/img/portrait.webp" alt="Driesen 肖像" width="640" height="640" loading="lazy" decoding="async" />
+        <figcaption class="portrait-cap"><span>DRIESEN</span></figcaption>
+      </figure>
+      <div class="about-copy">
+        <p class="about-line">Photographer. <span class="al-cn">摄影师</span><br>Product developer. <span class="al-cn">产品开发</span><br>Studio founder. <span class="al-cn">工作室主理人</span></p>
+        <p class="reveal" style="--d:.2s">镜头向外看见世界，产品向内落地想法。</p>
+        <ul class="about-tags reveal" style="--d:.26s">
+          <li>Photography</li><li>Product</li><li>AIGC</li><li>Imprint Skill</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="trio">
+      <article class="tile reveal" style="--d:.1s">
+        <span class="idx">01 / PHOTOGRAPHER</span>
+        <h3 class="tile-title">摄影师 <em>Photography</em></h3>
+        <p class="tile-body">无论你在地球的哪一端，在影像的世界里，我们终会相遇。</p>
+      </article>
+      <article class="tile reveal" style="--d:.18s">
+        <span class="idx">02 / PRODUCT DEVELOPER</span>
+        <h3 class="tile-title">产品开发 <em>Product</em></h3>
+        <p class="tile-body">从构思到上线独立落地，涉足小程序、Agent 工具、排版引擎。作品的底线，是可以真实运转。</p>
+      </article>
+      <article class="tile reveal" style="--d:.26s">
+        <span class="idx">03 / STUDIO FOUNDER</span>
+        <h3 class="tile-title">工作室主理人 <em>Studio</em></h3>
+        <p class="tile-body">工作室筹备上线。以产品逻辑打磨审美，一间配饰工作室。公域获能见度，私域沉淀同好。</p>
+      </article>
+    </div>
+
+    <div class="index-block">
+      <p class="eyebrow reveal">INDEX — 往下滚，或直接点一行。</p>
+      <ul class="index-list">
+        <li class="reveal" style="--d:.06s"><a href="#selected-work"><span class="i-num">01</span><span class="i-cn">产品开发</span><span class="i-en">Selected Work</span><span class="i-count">06</span></a></li>
+        <li class="reveal" style="--d:.1s"><a href="#photography"><span class="i-num">02</span><span class="i-cn">摄影</span><span class="i-en">Photography</span><span class="i-count">31</span></a></li>
+        <li class="reveal" style="--d:.14s"><a href="#aigc"><span class="i-num">03</span><span class="i-cn">AIGC作品</span><span class="i-en">Generated Work</span><span class="i-count">—</span></a></li>
+        <li class="reveal" style="--d:.18s"><a href="#imprint"><span class="i-num">04</span><span class="i-cn">Imprint Skill</span><span class="i-en">Typst Engine</span><span class="i-count">—</span></a></li>
+        <li class="reveal" style="--d:.22s"><a href="#studio"><span class="i-num">05</span><span class="i-cn">曜屿腾跃工作室</span><span class="i-en">Studio</span><span class="i-count">—</span></a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 SELECTED WORK ============ -->
+<section class="section" id="selected-work">
+  <div class="container">
+    <div class="sec-head">
+      <p class="eyebrow reveal">02 — SELECTED WORK</p>
+      <h2 class="h2">产品开发——具备实际运行能力的项目。</h2>
+      <p class="sec-desc reveal" style="--d:.1s">所有案例均完整阐释设计动机、实施方案与最终成效。</p>
+    </div>
+
+    <div class="stats">
+      <div class="stat reveal" style="--d:.06s"><b data-count="6">6</b><span>Products</span></div>
+      <div class="stat reveal" style="--d:.12s"><b data-count="87">87</b><span>Unit Tests</span></div>
+      <div class="stat reveal" style="--d:.18s"><b data-count="304">304</b><span>Assertions</span></div>
+      <div class="stat reveal" style="--d:.24s"><b data-count="1">1</b><span>Provincial Award</span></div>
+    </div>
+
+    <div class="work-grid" id="workGrid"></div>
+  </div>
+</section>
+
+<!-- ============ 03 PHOTOGRAPHY ============ -->
+<section class="section" id="photography">
+  <div class="container">
+    <div class="sec-head">
+      <p class="eyebrow reveal">03 — PHOTOGRAPHY</p>
+      <h2 class="h2 reveal" style="--d:.06s">Driesen 摄影集</h2>
+      <p class="sec-desc reveal" style="--d:.1s">我常常不懂记忆的分量，直到那天相片显影，正在消散的过往以一种更加坚固的方式回到我面前。</p>
+    </div>
+
+    <div class="cf reveal" id="coverflow" aria-label="Driesen 摄影集 — 唱片架式相册，可拖拽切换">
+      <div class="cf-stage" id="cfStage" tabindex="0" role="group" aria-label="左右拖拽切换照片"></div>
+      <div class="cf-bar">
+        <span class="cf-count" id="cfCount">01 / 31</span>
+        <span class="cf-name" id="cfName">飞檐 · Eaves</span>
+        <span class="cf-hint">拖拽 / 滚轮切换 · 点中间那张看大图</span>
+      </div>
+    </div>
+    <p class="credit reveal">PHOTOGRAPHY BY DRIESEN · 2026 COLLECTION</p>
+  </div>
+</section>
+
+<!-- ============ 04 AIGC ============ -->
+<section class="section" id="aigc">
+  <div class="container">
+    <div class="sec-head">
+      <p class="eyebrow reveal">04 — AIGC WORK</p>
+      <h2 class="h2 reveal" style="--d:.06s">AIGC——模型时代的作品。</h2>
+    </div>
+
+    <!-- 归零：电影感 -->
+    <article class="case case-film reveal">
+      <header class="case-head">
+        <span class="idx">01</span>
+        <div>
+          <p class="eyebrow">AI Short Film · 5′30″ · 2.39:1</p>
+          <h3 class="work-title">归零<span class="title-tag">AIGC短片</span> <em class="film-en">Back to Zero</em></h3>
+        </div>
+      </header>
+
+      <blockquote class="film-quote reveal">它不是一个选择，是一个习惯——像每天收工前，把量具推回零位的那一声。</blockquote>
+
+      <div class="scenes">
+        <section class="scene reveal">
+          <p class="scene-no">SCENE 01</p>
+          <p class="scene-txt">实训耗材验收。供应商是二十多年前的学生，饭桌上递来一个信封。抽检出合金刀头薄了 0.03 毫米——在合同公差之内。签字，就没人难做。</p>
+        </section>
+        <section class="scene reveal">
+          <p class="scene-no">SCENE 02</p>
+          <p class="scene-txt">闪回二十八年前。他把学校的进口量具借回家，雨夜被盗。一张一张赔了 3860 元，用十二年走回实训室。</p>
+        </section>
+        <section class="scene reveal">
+          <p class="scene-no">SCENE 03</p>
+          <p class="scene-txt">验收单上写下不合格。退休那天，锁着的铁盒交给学生：一张 1998 年的收据，一把磨白了「周」字的旧卡尺。学生把读数推回 0.00。</p>
+        </section>
+      </div>
+
+      <h4 class="sub-head">Characters &amp; Frames — 三视图与三十六帧</h4>
+      <div class="charstrip reveal" id="charstrip" aria-label="角色设定图，前四位"></div>
+
+      <p class="work-desc note">一致性做法：每个角色先钉一张主参考图，出一镜比一镜；影调偏了就整镜重做，不靠手感。三十六帧按叙事顺序排成一张网格。</p>
+
+      <div class="film-grid reveal" id="filmGrid" aria-label="三十六帧序列，按叙事顺序排列"></div>
+    </article>
+
+    <!-- 醒狮觉醒：赛博朋克 × 广东醒狮 -->
+    <article class="case case-film case-awaken reveal">
+      <header class="case-head">
+        <span class="idx">02</span>
+        <div>
+          <p class="eyebrow">AI Short Film · 45″ · 2.39:1</p>
+          <h3 class="work-title">醒狮·觉醒<span class="title-tag">赛博朋克</span> <em class="film-en">Awaken</em></h3>
+        </div>
+      </header>
+
+      <blockquote class="film-quote reveal">最后一头醒狮换成了机械，心跳还是鼓点。</blockquote>
+
+      <div class="scenes">
+        <section class="scene reveal">
+          <p class="scene-no">SCENE 01</p>
+          <p class="scene-txt">雨夜的霓虹空巷，蒙尘的机械狮头挂在数据神龛上待机。蓝青冷光、雨水顺鬃毛滴落、全息尘埃浮动——它在等一个信号。</p>
+        </section>
+        <section class="scene reveal">
+          <p class="scene-no">SCENE 02</p>
+          <p class="scene-txt">一粒橙红点亮瞳孔，电路像血脉一路蔓到鬃梢。能量核心点火，光纤鬃毛逐根燃亮；泛黄的旧档案从信号里浮出来，布面醒狮正在采青。</p>
+        </section>
+        <section class="scene reveal">
+          <p class="scene-no">SCENE 03</p>
+          <p class="scene-txt">它跃上摩天楼顶，鬃毛炸成金色拉丝，品红电弧缠身。舞罢雨停，天光亮起，狮头立在楼顶回望城市剪影，呼吸灯一明一灭。</p>
+        </section>
+      </div>
+
+      <ul class="meta-strip reveal">
+        <li><span class="mk">FORMAT</span><span class="mv">2.39:1 · 24fps</span></li>
+        <li><span class="mk">ICH</span><span class="mv">广东醒狮</span></li>
+        <li><span class="mk">SHOTS</span><span class="mv">21 镜</span></li>
+        <li><span class="mk">PIPELINE</span><span class="mv">文生图 → 图生视频</span></li>
+      </ul>
+
+      <h4 class="sub-head">Frames — 二十一帧</h4>
+
+      <div class="film-grid film-grid--7 reveal" id="awakenGrid" aria-label="《醒狮·觉醒》二十一帧，按叙事顺序排列"></div>
+    </article>
+    <!-- 详情页：设计思路与视觉语言 -->
+    <article class="case reveal">
+      <header class="case-head">
+        <span class="idx">03</span>
+        <div>
+          <p class="eyebrow">E-commerce Editorial · Product Visual</p>
+          <h3 class="work-title">AIGC产品电商详情页</h3>
+        </div>
+      </header>
+
+      <p class="work-desc">用做杂志的方式做商品页。先定网格与字号，再放图——图是句子，版式是语法。</p>
+
+      <ul class="notes-grid" id="designNotes"></ul>
+
+      <h4 class="sub-head">Screens</h4>
+      <div class="screen-gallery" id="screens"></div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ============ 05 IMPRINT ============ -->
+<section class="section" id="imprint">
+  <div class="container">
+    <div class="sec-head">
+      <p class="eyebrow reveal">05 — IMPRINT SKILL</p>
+      <h2 class="h2 reveal" style="--d:.06s">Imprint Skill。</h2>
+      <p class="sec-desc reveal" style="--d:.1s">规范固化于代码，摒弃手动微调。<br>一源多端，一份 Markdown 生成四类成品，换肤不改原文。</p>
+    </div>
+
+    <ul class="meta-strip reveal">
+      <li><span class="mk">ENGINE</span><span class="mv">Typst</span></li>
+      <li><span class="mk">OUTPUT</span><span class="mv">PDF · EPUB · HTML · DOCX</span></li>
+      <li><span class="mk">COVERS</span><span class="mv">5 styles</span></li>
+      <li><span class="mk">TESTS</span><span class="mv">87 assertions</span></li>
+    </ul>
+
+    <table class="tbl reveal">
+      <caption>SYSTEM</caption>
+      <tbody>
+        <tr><th scope="row">引擎</th><td>Typst。一页 32 毫秒，语法接近 Markdown，排版判断全部写成函数。</td></tr>
+        <tr><th scope="row">输入</th><td>一个 book.yml 管开本、皮肤、封面；正文纯 Markdown，图与注走相对路径。</td></tr>
+        <tr><th scope="row">输出</th><td>PDF 送印、EPUB 3 上架、单页 HTML 试读、DOCX 交编辑。编号、页码、交叉引用同源。</td></tr>
+        <tr><th scope="row">图版</th><td>图不拉伸；并排图统一裁切高度；压图文字自动加深色 scrim，对比度不够就重算。</td></tr>
+        <tr><th scope="row">封面</th><td>Solid / Minimal / Centered / Photo / Magazine，一个字段切换。该给图的没给图，自动退回色块，不出空框。</td></tr>
+      </tbody>
+    </table>
+
+    <a class="link-arrow reveal" href="#skill">看它排出来的成品 <span>↓</span></a>
+
+    <!-- 引擎成品：《雪域之上》画册 -->
+    <div class="album-block" id="skill">
+      <h3 class="sub-head reveal">雪域之上 <em class="film-en">Above the Snow Line</em></h3>
+      <p class="work-desc reveal" style="--d:.06s">西藏人文风光画册。由 Imprint 引擎排出——图不拉伸，压图白字始终可读。</p>
+
+      <ul class="meta-strip reveal">
+        <li><span class="mk">FORMAT</span><span class="mv">248 × 175 mm</span></li>
+        <li><span class="mk">STYLE</span><span class="mv">photo-essay</span></li>
+        <li><span class="mk">COVER</span><span class="mv">photo style</span></li>
+        <li><span class="mk">SKIN</span><span class="mv">photo-essay</span></li>
+      </ul>
+
+      <div class="album-shelf reveal">
+        <div class="album-track" id="albumTrack" tabindex="0" aria-label="《雪域之上》十六页，可横向滚动"></div>
+      </div>
+      <p class="note reveal">横向滚动查看十六页。封面到版心全部由引擎自动生成。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 STUDIO ============ -->
+<section class="section" id="studio">
+  <div class="container">
+    <div class="sec-head">
+      <p class="eyebrow reveal">06 — STUDIO</p>
+      <h2 class="h2 reveal" style="--d:.06s">曜屿腾跃工作室<span class="h2-note">筹备中</span></h2>
+      <p class="status reveal" style="--d:.14s"><span class="dot"></span>已登记 · 深圳个体工商户</p>
+    </div>
+
+    <blockquote class="quote reveal">一个有设计感的配饰品牌。设计先于流量，个人品牌先于广告。</blockquote>
+
+    <div class="channels">
+      <article class="channel reveal" style="--d:.08s">
+        <span class="idx">01 / DESIGN</span>
+        <h3>设计</h3>
+        <p>自主完成产品影像的拍摄与后期。以视觉审美建立差异化，用画面建立第一重感知。</p>
+      </article>
+      <article class="channel reveal" style="--d:.16s">
+        <span class="idx">02 / PERSONAL BRAND</span>
+        <h3>个人品牌</h3>
+        <p>以「摄影系男生的配饰选品台」为标识。借局部画面与听觉载体传递气质，先共鸣审美，再相遇器物。</p>
+      </article>
+      <article class="channel reveal" style="--d:.24s">
+        <span class="idx">03 / CHANNELS</span>
+        <h3>公私域联动</h3>
+        <p>公域内容负责触达与吸引，自研阵地承接用户沉淀。搭建长效会员运营体系，实现可持续的用户复购，全链路协同运转。</p>
+      </article>
+    </div>
+
+    <div class="path-flow reveal">
+      <span class="pf-node">内容获客</span><i>→</i>
+      <span class="pf-node">首单转化</span><i>→</i>
+      <span class="pf-node">小程序沉淀</span><i>→</i>
+      <span class="pf-node">会员复购</span><i>→</i>
+      <span class="pf-node">自有品牌</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 07 CONTACT ============ -->
+<section class="section section-contact" id="contact">
+  <div class="container">
+    <div class="sec-head">
+      <p class="eyebrow reveal">07 — CONTACT</p>
+      <h2 class="h2 reveal" style="--d:.06s">Work with me.</h2>
+    </div>
+
+    <div class="contact-grid">
+      <div class="contact-left">
+        <p class="lede reveal">约拍、做视觉、把想法做成产品——都可以从这里开始。</p>
+        <ul class="link-list">
+          <li class="reveal" style="--d:.14s"><a href="https://verity-check.app.workbuddy.host" target="_blank" rel="noopener"><span>Verity · 有据</span><span class="l-url">verity-check.app.workbuddy.host</span><span class="l-arrow">↗</span></a></li>
+          <li class="reveal" style="--d:.18s"><a href="https://verdict-lab.app.workbuddy.host" target="_blank" rel="noopener"><span>Verdict · 实验决策台</span><span class="l-url">verdict-lab.app.workbuddy.host</span><span class="l-arrow">↗</span></a></li>
+          <li class="reveal" style="--d:.22s"><a href="#aigc"><span>AI 短片《归零》</span><span class="l-url">Section · AIGC</span><span class="l-arrow">↓</span></a></li>
+          <li class="reveal" style="--d:.26s"><a href="#imprint"><span>Imprint Skill</span><span class="l-url">Section · Imprint</span><span class="l-arrow">↓</span></a></li>
+        </ul>
+      </div>
+      <aside class="qr-card reveal" style="--d:.2s">
+        <span class="mk">WECHAT</span>
+        <div class="qr-frame"><img src="assets/img/wechat-qr.webp" alt="微信二维码" width="408" height="520" loading="lazy" decoding="async" /></div>
+        <p class="qr-note">扫码加我 · 备注来意</p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot" id="footer">
+  <div class="foot-wrap">
+    <div class="foot-grid">
+      <div class="foot-col">
+        <h4>Sitemap</h4>
+        <ul>
+          <li><a href="#hero">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#selected-work">Selected Work</a></li>
+          <li><a href="#photography">Photography</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Elsewhere</h4>
+        <ul>
+          <li><a href="#aigc">AIGC</a></li>
+          <li><a href="#imprint">Imprint Skill</a></li>
+          <li><a href="#studio">Studio</a></li>
+        </ul>
+      </div>
+      <div class="foot-col foot-wide">
+        <h4>Work with me:</h4>
+        <a class="foot-mail" href="#contact"><span>WeChat</span><span class="fm-extra"> · scan the code</span> <i>↗</i></a>
+      </div>
+    </div>
+
+    <p class="foot-line"><span>我不知道我以后会变成什么样，</span><span>但我总觉得好像会很好的</span></p>
+
+    <div class="foot-meta">
+      <span>Based in Shenzhen, China</span>
+      <span>Photography · Product · AIGC</span>
+      <span>&copy; 2026 · Driesen · All rights reserved</span>
+    </div>
+  </div>
+
+  <div class="foot-word" aria-hidden="true">DRIESEN</div>
+  <a class="to-top" href="#hero" aria-label="Back to top" title="Back to top">↑</a>
+</footer>
+
+<!-- ============ LIGHTBOX ============ -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="作品大图" hidden>
+  <button class="lb-close" id="lbClose" aria-label="关闭">×</button>
+  <button class="lb-nav lb-prev" id="lbPrev" aria-label="上一张">‹</button>
+  <button class="lb-nav lb-next" id="lbNext" aria-label="下一张">›</button>
+  <figure class="lb-figure">
+    <img id="lbImg" alt="" decoding="async" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" />
+    <figcaption>
+      <span class="lb-cn" id="lbCn"></span>
+      <span class="lb-en" id="lbEn"></span>
+      <span class="lb-num" id="lbNum"></span>
+    </figcaption>
+  </figure>
+</div>
+
+<script src="assets/js/data.js?v=20261028a"></script>
+<script src="assets/js/sizes.js?v=20261028a"></script>
+<script src="assets/js/main.js?v=20261028a"></script>
+<script src="assets/js/motion.js?v=20261028a"></script>
+</body>
+</html>

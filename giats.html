@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Driesen — Photography, Product, AIGC</title>
+<meta name="description" content="Driesen. Photographer, product developer, studio founder. Shenzhen. Only what is finished lives here." />
+<meta property="og:title" content="Driesen — Photography, Product, AIGC" />
+<meta property="og:description" content="Shoot, build, generate." />
+<meta name="theme-color" content="#edebe6" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23edebe6'/%3E%3Ctext x='16' y='23' font-family='Helvetica,Arial' font-size='19' font-weight='700' fill='%230b0b0b' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/giats.css?v=20261026zh" />
+</head>
+<body>
+
+<!-- ============ INK — pointer fluid layer ============ -->
+<canvas class="ink" id="ink" aria-hidden="true"></canvas>
+
+<!-- ============ BOOT ============ -->
+<div class="boot" id="boot" aria-hidden="true">
+  <div class="boot-card"><span>Driesen</span></div>
+</div>
+
+<!-- ============ RIGHT PROGRESS ============ -->
+<div class="bar" aria-hidden="true"><i id="barFill"></i></div>
+
+<!-- ============ NAV ============ -->
+<a class="gn-logo" href="#top">DRIESEN</a>
+
+<header class="gn" id="gn">
+  <div class="gn-right">
+    <a class="pill pill-light" href="#contact"><span>GET IN TOUCH</span><i class="ball"></i></a>
+    <button class="pill pill-dark" id="menuBtn" aria-expanded="false" aria-controls="menu">
+      <span class="pm"><i><b>MENU</b><em>CLOSE</em></i></span>
+    </button>
+  </div>
+</header>
+
+<nav class="menu" id="menu" aria-hidden="true" aria-label="Main menu">
+  <div class="menu-inner">
+    <div class="menu-col">
+      <h5>Sections</h5>
+      <ol>
+        <li><a href="#about"><span>01</span>About</a></li>
+        <li><a href="#work"><span>02</span>Selected Work</a></li>
+        <li><a href="#photography"><span>03</span>Photography</a></li>
+        <li><a href="#aigc"><span>04</span>AIGC</a></li>
+        <li><a href="#imprint"><span>05</span>Imprint</a></li>
+        <li><a href="#studio"><span>06</span>Studio</a></li>
+      </ol>
+    </div>
+    <div class="menu-col">
+      <h5>Selected Work</h5>
+      <ol>
+        <li><a href="#work"><span>—</span>AI Interviewer</a></li>
+        <li><a href="#work"><span>—</span>Verity</a></li>
+        <li><a href="#work"><span>—</span>Verdict</a></li>
+        <li><a href="#work"><span>—</span>Buqi</a></li>
+        <li><a href="#work"><span>—</span>Dragon Nest</a></li>
+        <li><a href="#work"><span>—</span>Bid Radar</a></li>
+      </ol>
+    </div>
+    <div class="menu-col">
+      <h5>Elsewhere</h5>
+      <ol>
+        <li><a href="https://verity-check.app.workbuddy.host" target="_blank" rel="noopener"><span>↗</span>Verity live</a></li>
+        <li><a href="https://verdict-lab.app.workbuddy.host" target="_blank" rel="noopener"><span>↗</span>Verdict live</a></li>
+        <li><a href="#imprint"><span>—</span>Imprint engine</a></li>
+        <li><a href="#studio"><span>—</span>Yaoyu Tengyue</a></li>
+      </ol>
+    </div>
+    <div class="menu-col">
+      <h5>Contact</h5>
+      <ol>
+        <li><a href="#contact"><span>—</span>WeChat</a></li>
+      </ol>
+      <p class="menu-meta">Shenzhen · <span id="clock">--:--</span><br />Photography · Product · AIGC</p>
+    </div>
+    <div class="menu-foot">
+      <span>Driesen — portfolio</span>
+      <span>Only what is finished</span>
+      <span>© 2026</span>
+    </div>
+  </div>
+  <div class="menu-word" aria-hidden="true">DRIESEN</div>
+</nav>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="hero">
+    <div class="wrap hero-top">
+      <h1 class="hero-h1 plx" style="--mul:14">
+        <span class="hl"><i>Photographs,</i></span>
+        <span class="hl hl-b"><i>Products, Images.</i></span>
+      </h1>
+      <p class="hero-note plx" style="--mul:-9">
+        The lens looks out at the world. The product puts ideas on the ground.
+        This page keeps only what is finished.
+      </p>
+    </div>
+
+    <div class="wrap hero-visual">
+      <figure class="hshot plx" id="heroShot" style="--mul:-16">
+        <img src="assets/photos/12-snow-ridge.webp"
+             alt="Snow Ridge, Tibet — photograph by Driesen"
+             width="1600" height="1067" fetchpriority="high" decoding="async" />
+      </figure>
+      <aside class="hpanel plx" style="--mul:9">
+        <span class="hb-top">01 — Hero</span>
+        <p class="hb-line">Six products,<br />thirty-one photographs.<br /><em>Nothing here is a mockup.</em></p>
+        <span class="hb-foot">Snow Ridge · Tibet<br />2024</span>
+      </aside>
+      <div class="hero-foot">
+        <div class="marquee" aria-hidden="true">
+          <div class="marquee-track" id="marqueeTrack"></div>
+        </div>
+        <span class="hero-mark">01 / HERO — <em>Snow Ridge</em>, Tibet</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 01 ABOUT ============ -->
+  <section class="about" id="about">
+    <div class="wrap">
+      <p class="kicker rv">01 — About</p>
+      <h2 class="h-big split-on-view">Hey, I&rsquo;m <b>Driesen</b>.</h2>
+
+      <div class="about-grid">
+        <div class="about-copy">
+          <p class="pull rv">The lens looks out at the world. The product puts ideas on the ground.</p>
+          <p class="words">Photographer. Product developer. Studio founder.</p>
+          <p class="words">Wherever you are on the planet, we will meet inside the image.</p>
+          <p class="words">Mini programs, agent tools, a typesetting engine — idea to launch, built alone. The floor is simple: the work has to actually run.</p>
+        </div>
+        <figure class="about-photo">
+          <img src="assets/img/portrait.webp" alt="Portrait of Driesen" width="640" height="640" />
+        </figure>
+      </div>
+
+      <div class="clients">
+        <article class="cl cl-a">
+          <span class="cl-year">2026 · 01</span>
+          <h3>Photography</h3>
+          <p>Wherever you are on the planet, we meet inside the image. Thirty-one frames in the current book, shot across Tibet and the southern coast.</p>
+        </article>
+        <article class="cl cl-b">
+          <span class="cl-year">2026 · 02</span>
+          <h3>Product</h3>
+          <p>Idea to launch, alone. Mini programs, agent tools, a typesetting engine. Six products shipped, three hundred and four regression assertions holding them in place. The floor is simple: it has to run.</p>
+        </article>
+        <article class="cl cl-c">
+          <span class="cl-year">2026 · 03</span>
+          <h3>Studio</h3>
+          <p>An accessories label built on product logic. Design before traffic, a personal brand before advertising. Visibility in public, kin in private.</p>
+        </article>
+      </div>
+
+      <ul class="rows index-rows">
+        <li><a href="#work"><span class="r-n">01</span><span class="r-cn">Selected Work</span><span class="r-d">Six products</span><span class="r-x">06</span></a></li>
+        <li><a href="#photography"><span class="r-n">02</span><span class="r-cn">Photography</span><span class="r-d">Thirty-one frames</span><span class="r-x">31</span></a></li>
+        <li><a href="#aigc"><span class="r-n">03</span><span class="r-cn">AIGC</span><span class="r-d">Two films, one editorial</span><span class="r-x">—</span></a></li>
+        <li><a href="#imprint"><span class="r-n">04</span><span class="r-cn">Imprint Skill</span><span class="r-d">Typst engine</span><span class="r-x">—</span></a></li>
+        <li><a href="#studio"><span class="r-n">05</span><span class="r-cn">Yaoyu Tengyue</span><span class="r-d">Studio, in preparation</span><span class="r-x">—</span></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 02 SELECTED WORK — stacked ============ -->
+  <section class="work" id="work">
+    <div class="wrap work-head">
+      <p class="kicker rv">02 — Selected Work</p>
+      <h2 class="h-big split-on-view">Things that<br /><b>actually run.</b></h2>
+    </div>
+
+    <div class="stats wrap">
+      <div class="stat"><b data-count="6">0</b><span>Products</span></div>
+      <div class="stat"><b data-count="87">0</b><span>Unit Tests</span></div>
+      <div class="stat"><b data-count="304">0</b><span>Assertions</span></div>
+      <div class="stat"><b data-count="1">0</b><span>Provincial Award</span></div>
+    </div>
+
+    <div class="stack" id="workStack"></div>
+
+    <div class="wrap more">
+      <div class="more-head">
+        <p class="kicker">Also shipped</p>
+        <p class="more-note">Three more — one in review, two still moving.</p>
+      </div>
+      <div class="more-grid" id="workMore"></div>
+    </div>
+  </section>
+
+  <!-- ============ QUOTE ============ -->
+  <section class="quote" id="quote">
+    <div class="quote-sticky">
+      <div class="quote-ghost" id="quoteGhost" aria-hidden="true">
+        <span style="top:4%;left:-4%;--mul:34">habit</span>
+        <span style="top:32%;right:-6%;--mul:-46">zero</span>
+        <span style="bottom:1%;left:22%;--mul:22">calipers</span>
+      </div>
+      <div class="wrap quote-wrap">
+        <p class="kicker">From the film</p>
+        <p class="quote-text" id="quoteText">It isn&rsquo;t a choice, it&rsquo;s a habit — the sound of pushing the calipers back to zero at the end of every shift.</p>
+        <p class="quote-by">Back to Zero · 5&prime;30&Prime; · 2025</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 03 PHOTOGRAPHY ============ -->
+  <section class="photo" id="photography">
+    <div class="wrap">
+      <p class="kicker rv">03 — Photography</p>
+      <h2 class="h-big split-on-view">Driesen,<br /><b>a photobook.</b></h2>
+      <p class="words sec-lede">I never understood the weight of memory until the negative developed — everything that was fading came back, in a harder form.</p>
+      <div class="photo-meta">
+        <span id="photoCount">31 frames</span>
+        <span>Tibet · Cities · Still life</span>
+        <span>2026 collection</span>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="cf" id="coverflow">
+        <div class="cf-stage" id="cfStage" tabindex="0" role="group" aria-label="Driesen, a photobook — drag or scroll to browse"></div>
+        <div class="cf-bar">
+          <span class="cf-count" id="cfCount">01 / 31</span>
+          <span class="cf-name" id="cfName">—</span>
+          <span class="cf-hint">Drag, scroll or arrow keys · click the centre print</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 04 AIGC ============ -->
+  <section class="aigc" id="aigc">
+    <div class="wrap">
+      <p class="kicker rv">04 — AIGC</p>
+      <h2 class="h-big split-on-view">Made with<br /><b>models.</b></h2>
+    </div>
+
+    <!-- Back to Zero -->
+    <article class="film">
+      <div class="wrap film-head">
+        <span class="f-no">01</span>
+        <div>
+          <p class="kicker">AI short film · 5&prime;30&Prime; · 2.39:1</p>
+          <h3 class="f-title">Back to Zero</h3>
+        </div>
+      </div>
+
+      <div class="wrap">
+        <blockquote class="f-quote words">It isn&rsquo;t a choice, it&rsquo;s a habit — the sound of pushing the calipers back to zero at the end of every shift.</blockquote>
+
+        <div class="scenes">
+          <section class="scene">
+            <p class="sc-no">Scene 01</p>
+            <p class="words">Consumables inspection. The supplier was a student of his twenty-eight years ago, and a envelope comes across the dinner table. Sampling finds the alloy insert three hundredths of a millimetre thin — inside contract tolerance. Sign it and nobody is embarrassed.</p>
+          </section>
+          <section class="scene">
+            <p class="sc-no">Scene 02</p>
+            <p class="words">Twenty-eight years back. He borrowed the school&rsquo;s imported gauges, took them home, and they were stolen in the rain. He paid back 3,860 yuan, item by item, and walked back into the workshop over twelve years.</p>
+          </section>
+          <section class="scene">
+            <p class="sc-no">Scene 03</p>
+            <p class="words">He writes &ldquo;rejected&rdquo; on the sheet. On his last day he hands a locked tin box to the student: a 1998 receipt, and a caliper worn smooth at the surname. The student pushes the reading back to 0.00.</p>
+          </section>
+        </div>
+
+        <div class="spec">
+          <span><b>Format</b>2.39:1 · 24fps</span>
+          <span><b>Frames</b>36</span>
+          <span><b>Pipeline</b>Text to image, image to video</span>
+          <span><b>Consistency</b>One master reference per character</span>
+        </div>
+      </div>
+
+      <div class="wrap">
+        <div class="grid-head">
+          <h4>Thirty-six frames</h4>
+          <span>In narrative order</span>
+        </div>
+        <div class="frame-grid" id="frameGrid"></div>
+      </div>
+    </article>
+
+    <!-- Awaken -->
+    <article class="film">
+      <div class="wrap film-head">
+        <span class="f-no">02</span>
+        <div>
+          <p class="kicker">AI short film · 45&Prime; · 2.39:1</p>
+          <h3 class="f-title">Awaken</h3>
+        </div>
+      </div>
+
+      <div class="wrap">
+        <blockquote class="f-quote words">The last lion was rebuilt in metal. Its heartbeat is still the drum.</blockquote>
+
+        <div class="scenes">
+          <section class="scene">
+            <p class="sc-no">Scene 01</p>
+            <p class="words">A neon alley after rain. A dusty mechanical lion head hangs dormant on a data shrine — cold cyan light, water running off the mane, holographic dust adrift. It is waiting for a signal.</p>
+          </section>
+          <section class="scene">
+            <p class="sc-no">Scene 02</p>
+            <p class="words">One orange-red point lights the pupils, and circuitry spreads like veins to the tips of the mane. The core ignites, fibre by fibre. Faded archive footage surfaces out of the signal: a cloth lion, collecting the greens.</p>
+          </section>
+          <section class="scene">
+            <p class="sc-no">Scene 03</p>
+            <p class="words">It leaps to a rooftop, mane exploding into gold filament, magenta arcs wrapping the body. The dance ends, the rain stops, daylight comes. The head stands above the skyline, breathing light in and out.</p>
+          </section>
+        </div>
+
+        <div class="spec">
+          <span><b>Format</b>2.39:1 · 24fps</span>
+          <span><b>Heritage</b>Guangdong lion dance</span>
+          <span><b>Shots</b>21</span>
+          <span><b>Pipeline</b>Text to image, image to video</span>
+        </div>
+      </div>
+
+      <div class="wrap">
+        <div class="grid-head">
+          <h4>Twenty-one shots</h4>
+          <span>In narrative order</span>
+        </div>
+        <div class="frame-grid frame-grid-7" id="awakenGrid"></div>
+      </div>
+    </article>
+
+    <!-- Editorial -->
+    <article class="film">
+      <div class="wrap film-head">
+        <span class="f-no">03</span>
+        <div>
+          <p class="kicker">E-commerce editorial · Product visual</p>
+          <h3 class="f-title">AIGC product pages</h3>
+        </div>
+      </div>
+
+      <div class="wrap">
+        <p class="words f-lede">Product pages built the way a magazine is built. Grid and type first, pictures after — the image is the sentence, the layout is the grammar.</p>
+        <ul class="notes" id="notes"></ul>
+        <div class="grid-head">
+          <h4>Nine screens</h4>
+          <span>Drag to scroll</span>
+        </div>
+        <div class="rail rail-screen" id="screenRail" tabindex="0"></div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ============ 05 IMPRINT ============ -->
+  <section class="imprint" id="imprint">
+    <div class="wrap">
+      <p class="kicker rv">05 — Imprint Skill</p>
+      <h2 class="h-big split-on-view">One source,<br /><b>four artefacts.</b></h2>
+      <p class="words sec-lede">Rules frozen into code, not nudged by hand. One Markdown file becomes four finished things — change the skin, never the text.</p>
+
+      <div class="spec spec-top">
+        <span><b>Engine</b>Typst</span>
+        <span><b>Output</b>PDF · EPUB · HTML · DOCX</span>
+        <span><b>Covers</b>5 styles</span>
+        <span><b>Tests</b>87 assertions</span>
+      </div>
+
+      <table class="tbl">
+        <caption>System</caption>
+        <tbody>
+          <tr><th scope="row">Engine</th><td>Typst. Thirty-two milliseconds a page, syntax close to Markdown, every typographic decision written as a function.</td></tr>
+          <tr><th scope="row">Input</th><td>One book.yml holds trim size, skin and cover. Body text is plain Markdown; images and notes resolve by relative path.</td></tr>
+          <tr><th scope="row">Output</th><td>PDF for print, EPUB 3 for stores, single-page HTML for preview, DOCX for editors. Numbers, folios and cross-references share one source.</td></tr>
+          <tr><th scope="row">Plates</th><td>Images are never stretched. Side-by-side plates share a crop height. Type over image gets an automatic scrim; if contrast still fails it recomputes.</td></tr>
+          <tr><th scope="row">Covers</th><td>Solid, Minimal, Centered, Photo, Magazine — one field switches. No image supplied means a colour block, never an empty frame.</td></tr>
+        </tbody>
+      </table>
+
+      <!-- Album -->
+      <div class="album">
+        <div class="album-head">
+          <h3>Above the Snow Line</h3>
+          <ul class="album-spec">
+            <li><b>Format</b>248 × 175 mm</li>
+            <li><b>Style</b>photo-essay</li>
+            <li><b>Cover</b>photo style</li>
+            <li><b>Pages</b>16</li>
+          </ul>
+        </div>
+        <p class="words album-note">A humanist landscape book from Tibet, set by the Imprint engine — plates never stretched, white type over image always readable.</p>
+        <div class="rail rail-album" id="albumRail" tabindex="0"></div>
+        <p class="note">Sixteen pages, cover to text block, generated by the engine. Drag or scroll sideways.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 06 STUDIO ============ -->
+  <section class="studio" id="studio">
+    <div class="wrap">
+      <p class="kicker rv">06 — Studio</p>
+      <h2 class="h-big rv">Yaoyu Tengyue<span class="h-note">in preparation</span></h2>
+      <p class="status rv"><span class="dot"></span>Registered · Shenzhen, individual business</p>
+
+      <blockquote class="studio-quote words">An accessories label with a design point of view. Design before traffic, personal brand before advertising.</blockquote>
+
+      <div class="channels">
+        <article class="ch">
+          <span class="tri-idx">01 / Design</span>
+          <h3>Design</h3>
+          <p>I shoot and finish every product image myself. Visual taste is the differentiator; the frame is the first thing anyone feels.</p>
+        </article>
+        <article class="ch">
+          <span class="tri-idx">02 / Personal brand</span>
+          <h3>The brand</h3>
+          <p>An identity built as &ldquo;a photography student&rsquo;s accessory desk&rdquo;. Partial frames and sound carry the mood — taste first, object second.</p>
+        </article>
+        <article class="ch">
+          <span class="tri-idx">03 / Channels</span>
+          <h3>Public and private</h3>
+          <p>Public content reaches and attracts; a self-built space holds the people who stay. A long-running membership layer makes repeat purchase structural.</p>
+        </article>
+      </div>
+
+      <ol class="flow">
+        <li>Content</li><li>First order</li><li>Mini program</li><li>Membership</li><li>Own label</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ 07 CONTACT ============ -->
+  <section class="cta" id="contact">
+    <div class="wrap cta-grid">
+      <div class="cta-left">
+        <p class="kicker rv">07 — Contact</p>
+        <h2 class="cta-h">
+          <span class="hl"><i>Turn ideas</i></span>
+          <span class="hl"><i>into something that runs</i></span>
+          <span class="hl hl-b"><i>then ship it</i></span>
+        </h2>
+        <p class="words cta-sub">Shoots, visuals, building the idea into a product — start here.</p>
+        <ul class="link-list">
+          <li><a href="https://verity-check.app.workbuddy.host" target="_blank" rel="noopener"><span>Verity</span><em>verity-check.app.workbuddy.host</em><i>↗</i></a></li>
+          <li><a href="https://verdict-lab.app.workbuddy.host" target="_blank" rel="noopener"><span>Verdict</span><em>verdict-lab.app.workbuddy.host</em><i>↗</i></a></li>
+          <li><a href="#aigc"><span>Back to Zero</span><em>Section · AIGC</em><i>↓</i></a></li>
+          <li><a href="#imprint"><span>Imprint Skill</span><em>Section · Imprint</em><i>↓</i></a></li>
+        </ul>
+      </div>
+      <aside class="qr-card">
+        <span class="qr-mk">WECHAT</span>
+        <div class="qr-frame"><img src="assets/img/wechat-qr.webp" alt="WeChat QR code" width="408" height="520" /></div>
+        <p class="qr-note">Scan to add me — say what it&rsquo;s about</p>
+      </aside>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="foot">
+  <div class="wrap foot-grid">
+    <div class="foot-col">
+      <h4>Sitemap</h4>
+      <ul>
+        <li><a href="#top">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#work">Selected Work</a></li>
+        <li><a href="#photography">Photography</a></li>
+      </ul>
+    </div>
+    <div class="foot-col">
+      <h4>Elsewhere</h4>
+      <ul>
+        <li><a href="#aigc">AIGC</a></li>
+        <li><a href="#imprint">Imprint Skill</a></li>
+        <li><a href="#studio">Studio</a></li>
+        <li><a href="#contact">WeChat</a></li>
+      </ul>
+    </div>
+    <div class="foot-col foot-wide">
+      <h4>Work with me:</h4>
+      <a class="foot-mail" href="#contact">WeChat · scan the code</a>
+    </div>
+  </div>
+
+  <div class="wrap foot-meta">
+    <span>Based in Shenzhen, China</span>
+    <span>Photography · Product · AIGC</span>
+    <span>&copy; 2026 · Driesen · All rights reserved</span>
+  </div>
+
+  <div class="foot-word" aria-hidden="true">DRIESEN</div>
+  <a class="to-top" href="#top" aria-label="Back to top">↑</a>
+</footer>
+
+<!-- ============ LIGHTBOX ============ -->
+<div class="lb" id="lightbox" aria-hidden="true" role="dialog" aria-label="Photograph">
+  <button class="lb-x" id="lbClose" aria-label="Close">&#10005;</button>
+  <img id="lbImg" alt="" />
+  <p class="lb-cap" id="lbCap"></p>
+</div>
+
+<script src="assets/js/giats.js?v=20261026zh"></script>
+</body>
+</html>
