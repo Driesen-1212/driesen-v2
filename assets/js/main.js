@@ -27,12 +27,15 @@
   /* 生成 <img> 的属性串：真实地址直出 + 固有宽高防塌版。
      2026-10-27 修正：不再用「1×1 占位 + data-src」那一套。
      原因：显示一旦依赖 JS（等脚本跑完、等观察器触发），任何一环出错
-     或慢一拍，用户看到的就是白块。全站图只有 26.5MB、中位 78KB，
-     原生 loading="lazy" 足够，不需要自己调度。 */
+     或慢一拍，用户看到的就是白块。全站图只有 26.5MB、中位 78KB。
+     2026-10-27 二次修正：也不再交给原生 loading="lazy" —— 有了准确的
+     width/height 后浏览器会严格按距离推迟，线上实测滚动时八成图还空着；
+     v19 之所以稳，正是因为它没有尺寸、图一渲染就全在下载队列里。
+     这里保持「渲染即开始下载」，宁可多拉流量，也不让画面出现空块。 */
   function imgAttrs(src, alt, extra) {
     const [w, h] = sizeOf(src);
     return `src="${src}" width="${w}" height="${h}" ` +
-           `loading="lazy" decoding="async" alt="${alt}"${extra ? ' ' + extra : ''}`;
+           `decoding="async" alt="${alt}"${extra ? ' ' + extra : ''}`;
   }
 
   function hydrateImg(img) {
