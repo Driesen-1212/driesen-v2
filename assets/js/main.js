@@ -11,91 +11,6 @@
   const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ==========================================================
-     0. 图片按需加载（手机端内存）
-     全站 119 张图一起解码约 790MB，而手机浏览器单标签页通常只给
-     200~400MB，超了整页会被系统回收 —— 表现就是「白屏一下，然后
-     回到 enter 界面」。所以这里不再让浏览器一口气拉完：
-       · 每张图先只放 1×1 占位，真实地址存 data-src，比例靠
-         width/height 撑住（不会塌版）；
-       · 章节快进视口时才放图（IntersectionObserver，提前 1.2 屏）；
-       · 摄影区的唱片架另外按「当前张 ±2」开窗，滑到哪算哪。
-     ========================================================== */
-  const IMG_PH = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-  const SIZES = window.IMG_SIZES || {};
-  const sizeOf = src => SIZES[src] || [1600, 1067];
-
-  /* 生成 <img> 的属性串：真实地址直出 + 固有宽高防塌版。
-     2026-10-27 修正：不再用「1×1 占位 + data-src」那一套。
-     原因：显示一旦依赖 JS（等脚本跑完、等观察器触发），任何一环出错
-     或慢一拍，用户看到的就是白块。全站图只有 26.5MB、中位 78KB。
-     2026-10-27 二次修正：也不再交给原生 loading="lazy" —— 有了准确的
-     width/height 后浏览器会严格按距离推迟，线上实测滚动时八成图还空着；
-     v19 之所以稳，正是因为它没有尺寸、图一渲染就全在下载队列里。
-     这里保持「渲染即开始下载」，宁可多拉流量，也不让画面出现空块。 */
-  function imgAttrs(src, alt, extra) {
-    const [w, h] = sizeOf(src);
-    return `src="${src}" width="${w}" height="${h}" ` +
-           `decoding="async" alt="${alt}"${extra ? ' ' + extra : ''}`;
-  }
-
-  function hydrateImg(img) {
-    if (!img || !img.dataset || !img.dataset.src) return;
-    const src = img.dataset.src;
-    delete img.dataset.src;
-    img.addEventListener('load', () => img.classList.remove('is-lazy'), { once: true });
-    img.setAttribute('src', src);
-    if (img.complete && img.naturalWidth) img.classList.remove('is-lazy');
-  }
-
-  /* 2026-10-27 停用：原来会把滚远的图退回 1×1 占位来省解码内存，
-     实测代价是用户往回滑时看到一片空白（唱片架一屏空 22/26）。
-     现在图始终留在真址上，解码内存交给内核按压力回收，
-     这里保留空实现，只是不让老的调用点报错。 */
-  function deferImg() { /* 不再退回占位 */ }
-
-  /* 逐张观察：离视口还有一屏半就放图；滚过去两屏半就退回占位，
-     把解码内存还回去。这样无论往下滚多远，常驻内存都是「附近十几张」
-     的量级，而不是把 119 张全扛着。 */
-  const lazyImgs = [];
-  let sweepQueued = false;
-
-  function sweepLazy() {
-    const vh = window.innerHeight, vw = window.innerWidth;
-    for (let i = 0; i < lazyImgs.length; i++) {
-      const img = lazyImgs[i];
-      if (img.dataset.src) continue;              /* 已经是占位 */
-      const r = img.getBoundingClientRect();
-      if (r.bottom < -2.5 * vh || r.top > 3.5 * vh ||
-          r.right < -2.5 * vw || r.left > 3.5 * vw) deferImg(img);
-    }
-  }
-
-  function watchLazy() {
-    const imgs = $$('img[data-src]').filter(i => !i.closest('.cf-stage'));
-    if (!imgs.length) return;
-    if (!('IntersectionObserver' in window)) { imgs.forEach(hydrateImg); return; }
-
-    imgs.forEach(i => lazyImgs.push(i));
-
-    const io = new IntersectionObserver(entries => {
-      for (const en of entries) {
-        if (!en.isIntersecting) continue;
-        const img = en.target;
-        if (img.classList.contains('is-lazy')) img.classList.remove('is-lazy');
-        hydrateImg(img);
-      }
-    }, { rootMargin: '150% 0px 150% 0px' });
-
-    imgs.forEach(i => io.observe(i));
-
-    window.addEventListener('scroll', () => {
-      if (sweepQueued) return;
-      sweepQueued = true;
-      setTimeout(() => { sweepQueued = false; sweepLazy(); }, 340);
-    }, { passive: true });
-  }
-
-  /* ==========================================================
      1. 产品开发 — PRD 结构（复刻参考站案例卡）
      ========================================================== */
   function renderWorks() {
@@ -168,16 +83,14 @@
     const nameEl = $('#cfName');
     const hintEl = $('.cf-hint');
     if (hintEl && window.matchMedia('(hover: none)').matches) {
-      hintEl.textContent = '左右滑动切换 · 点一下看大图';
+      hintEl.textContent = '左右滑动切换 · 点中间那张看大图';
     }
     const N = window.PHOTOS.length;
 
     const items = window.PHOTOS.map((p, i) => {
       const fig = document.createElement('figure');
       fig.className = 'cf-item';
-      /* 卡片最大只有 430px 高，用 760px 宽的缩略图就够 —— 原图解码
-         13.7MB/张，五张开窗就是 68MB，手机上没必要 */
-      fig.innerHTML = `<div class="cf-card"><img ${imgAttrs('assets/photos/cf/' + p.f, p.cn + ' · ' + p.en, 'draggable="false"')} /></div>`;
+      fig.innerHTML = `<div class="cf-card"><img src="assets/photos/${p.f}" alt="${p.cn} · ${p.en}" draggable="false" decoding="async" /></div>`;
       stage.appendChild(fig);
       return { fig, img: fig.querySelector('img'), p, i, w: 0 };
     });
@@ -194,25 +107,21 @@
     function measure() {
       const sh = stage.clientHeight;
       const sw = stage.clientWidth;
-      /* 手机屏幕窄，主图按桌面那套 0.68 系数会被压成一小张、上下空一大截，
-         系数和最大宽度都放大，步进收窄，右侧才露得出层次 */
-      const narrow = sw < 700;
-      cardH = Math.round(Math.min(Math.max(sh * (narrow ? 0.74 : 0.68), 190), sw * 0.98, 430));
+      cardH = Math.round(Math.min(Math.max(sh * 0.68, 190), sw * 0.98, 430));
       items.forEach(it => {
-        /* 尺寸不看 naturalWidth —— 图现在是按需加载的，绝大多数还没解码。
-           用 sizes.js 里的固有尺寸算比例，任何时候都准 */
-        const sz = sizeOf('assets/photos/cf/' + it.p.f);
-        const asp = sz[0] / sz[1];
+        const iw = it.img.naturalWidth || 1600;
+        const ih = it.img.naturalHeight || 1067;
+        const asp = iw / ih;
         let h = cardH;
         let w = Math.round(h * asp);
-        const maxW = Math.round(sw * (narrow ? 0.84 : 0.78));
+        const maxW = Math.round(sw * 0.78);
         if (w > maxW) { w = maxW; h = Math.round(w / asp); }
         it.w = w;
         it.h = h;
         it.fig.style.width = (w + 16) + 'px';
         it.fig.style.height = (h + 16) + 'px';
       });
-      step = Math.min(cardH * (narrow ? 0.56 : 0.74), sw * (narrow ? 0.36 : 0.2));
+      step = Math.min(cardH * (sw < 700 ? 0.62 : 0.74), sw * (sw < 700 ? 0.42 : 0.2));
       need = true;
     }
 
@@ -231,11 +140,6 @@
         it.fig.style.opacity = ad > 3.4 ? '0' : String(Math.max(0.22, 1 - ad * 0.17));
         it.fig.style.zIndex = String(200 - Math.round(ad * 10));
         it.fig.style.pointerEvents = ad > 3.4 ? 'none' : 'auto';
-
-        /* 只留当前张前后两张的真图，其余还原成占位：唱片架 31 张
-           全解码要 424MB，手机上光这一块就能把标签页撑爆 */
-        if (ad <= 3.4) hydrateImg(it.img);
-        else if (ad > 4.6) deferImg(it.img);
       });
     }
 
@@ -418,7 +322,7 @@
       const g = window.SCREENS.find(x => x.key === key);
       body.innerHTML = `<div class="screens">${g.files.map((f, i) => `
         <figure class="reveal" style="--d:${Math.min(i, 8) * 0.04}s">
-          <img ${imgAttrs('assets/' + f, 'Style ' + g.label + ' · Screen ' + (i + 1))} />
+          <img src="assets/${f}" alt="Style ${g.label} · Screen ${i + 1}" decoding="async" />
         </figure>`).join('')}</div>`;
       makeDraggable(body.firstElementChild);
       observe();
@@ -441,7 +345,7 @@
     if (!host || !window.CHARACTERS) return;
     host.innerHTML = window.CHARACTERS.slice(0, 4).map((c, i) => `
       <figure class="char-card" style="--d:${i * 0.05}s">
-        <img ${imgAttrs('assets/char/' + c.f, c.label)} />
+        <img src="assets/char/${c.f}" alt="${c.label}" decoding="async" />
         <figcaption>${c.label}</figcaption>
       </figure>
     `).join('');
@@ -452,7 +356,7 @@
     if (!host || !window.AWAKEN) return;
     host.innerHTML = window.AWAKEN.map((f, i) => `
       <figure class="reveal" style="--d:${Math.min(i, 11) * 0.03}s">
-        <img ${imgAttrs('assets/sb/' + f.f, 'Frame ' + f.n + ' · ' + f.cn)} />
+        <img src="assets/sb/${f.f}" alt="Frame ${f.n} · ${f.cn}" decoding="async" />
         <figcaption>
           <span class="f-num">${f.n}</span>
           <span class="f-cn">${f.cn}</span>
@@ -467,7 +371,7 @@
     if (!host || !window.FRAMES) return;
     host.innerHTML = window.FRAMES.map((f, i) => `
       <figure class="reveal" style="--d:${Math.min(i, 11) * 0.04}s">
-        <img ${imgAttrs('assets/frames-grid/' + f.f, 'Frame ' + f.n + ' · ' + f.cn)} />
+        <img src="assets/frames-grid/${f.f}" alt="Frame ${f.n} · ${f.cn}" decoding="async" />
         <figcaption>
           <span class="f-num">${f.n}</span>
           <span class="f-cn">${f.cn}</span>
@@ -508,7 +412,7 @@
     if (!host || !window.ALBUM) return;
     host.innerHTML = window.ALBUM.pages.map((f, i) => `
       <figure class="album-page${i === 0 ? ' is-cover' : ''}" style="--d:${Math.min(i, 10) * 0.04}s">
-        <img ${imgAttrs('assets/' + f, window.ALBUM.title + ' · Page ' + (i + 1))} />
+        <img src="assets/${f}" alt="${window.ALBUM.title} · Page ${i + 1}" decoding="async" />
       </figure>
     `).join('');
   }
@@ -553,26 +457,6 @@
   /* ==========================================================
      7b. 页底兜底：接近页底时点亮所有残余 reveal
      ========================================================== */
-  /* ==========================================================
-     图片兜底：CDN 冷缓存偶发 502，坏一次就自己重试，
-     避免访客看到破图（最多两次，带递增延时）
-     ========================================================== */
-  function initImgRetry() {
-    document.addEventListener('error', e => {
-      const img = e.target;
-      if (!img || img.tagName !== 'IMG') return;
-      const n = Number(img.dataset.retry || 0);
-      if (n >= 2) return;
-      img.dataset.retry = String(n + 1);
-      const src = img.getAttribute('src') || '';
-      if (!src) return;
-      const base = src.split('#')[0].replace(/([?&])_r=\d+&?/, '$1').replace(/[?&]$/, '');
-      setTimeout(() => {
-        img.src = base + (base.includes('?') ? '&' : '?') + '_r=' + (n + 1);
-      }, 420 * (n + 1));
-    }, true);
-  }
-
   function initRevealFallback() {
     // 兜底：任何已经进入视口却还没吃到 is-in 的元素，直接放行。
     // 触发场景：图片加载后页面变高、锚点直达、快速滚动、用户中途切标签页。
@@ -744,16 +628,14 @@
     let booted = false;          // 静音基线是否已经播起来
     let userPaused = false;      // 用户主动点的暂停，不要自动救回
     let justUnlockedAt = 0;      // 刚被手势解锁的时间，避开同一次点击的开关逻辑
-    let armed = false;           // 已经点过「进入」，页面拿到播放许可
-    let rescues = 0;             // 被内核掐掉后带声救回来的次数，别无限重试
+    let swapping = false;        // 正在换元素：这期间旧元素的 pause 事件不算「被掐」
     let fadeTimer = null;
     const wait = ms => new Promise(r => setTimeout(r, ms));
 
     /* 进入画面还在场时，任何轻触/滑动都不该把声音放出来；
-       只有 Enter 按钮那一次点击算数（与 initGate 的判定保持一致）。
-       2026-10-27：桌面端也走进入画面，所以这里只看 gate 在不在，不再判触屏 */
+       只有 Enter 按钮那一次点击算数（与 initGate 的判定保持一致） */
     const gateUp = () => !!document.getElementById('gate');
-    const gateFirst = gateUp();
+    const gateFirst = gateUp() && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
     /* UI 一律从元素真实状态推导，避免「显示在播其实没声」 */
     const refresh = () => {
@@ -793,10 +675,7 @@
         nudge = document.createElement('button');
         nudge.type = 'button';
         nudge.className = 'audio-nudge';
-        nudge.innerHTML = '<span class="an-dot"></span>' +
-          (window.matchMedia('(hover: hover) and (pointer: fine)').matches
-            ? '点击任意处 · 开启声音'
-            : '轻触屏幕 · 音乐自动开启');
+        nudge.innerHTML = '<span class="an-dot"></span>轻触屏幕 · 音乐自动开启';
         nudge.addEventListener('click', e => { e.stopPropagation(); unlock(); });
         document.body.appendChild(nudge);
         requestAnimationFrame(() => { if (nudge) nudge.classList.add('is-on'); });
@@ -903,40 +782,25 @@
       }, 700);
     });
 
-    /* 内核有时会延迟半秒才掐掉播放。进过站（armed）就先带声救回来，
-       不能直接退回静音 + 提示条 —— 那正是「进去之后还要再点一下」的来源 */
-    function onPause(e) {
-      /* 只处理「当前在用那个元素」的暂停：换元素时旧元素被 pause 掉不算 */
-      if (e && e.currentTarget && e.currentTarget !== audio) return;
-      if (userPaused) return;
-      if (!audible && !armed) return;
+    /* 内核有时会延迟几百毫秒才掐掉「无手势出声」，所以 audible 之后
+       继续盯 pause：不是用户点的暂停，就退回静音基线并重新等手势 */
+    function onPause() {
+      if (swapping) return;                  // 换元素时旧元素被我们主动暂停，不算异常
+      if (this && this.__detached) return;   // pause 事件是异步派发的，旧元素要永久豁免
+      if (userPaused || !audible) return;
       audible = false;
       booted = false;
       clearInterval(fadeTimer);              // 停掉还在往上爬的淡入
-      const wantSound = armed && rescues < 2;
-      if (wantSound) rescues++;
-      audio.muted = !wantSound;
-      if (VOL_WRITABLE) audio.volume = TARGET;
-      const p = audio.play();
-      if (p && p.catch) p.catch(() => {});
-      setTimeout(() => {
-        if (wantSound && !audio.paused) {     // 救回来了，接着放
-          audible = true;
-          booted = true;
-          refresh();
-          return;
-        }
-        audio.muted = true;                   // 救不回来 → 静音基线 + 兜底提示
-        if (VOL_WRITABLE) audio.volume = 0;
-        const rp = audio.play();
-        if (rp && rp.catch) rp.catch(() => {});
-        booted = true;
-        bindUnlock();
-        showNudge();
-        refresh();
-      }, 520);
+      audio.muted = true;
+      if (VOL_WRITABLE) audio.volume = 0;
+      playMuted().then(ok => {
+        booted = ok;
+        if (!ok) showNudge();
+      });
+      bindUnlock();
+      showNudge();
+      refresh();
     }
-
     bindMedia(audio);
 
     /* ---------- 起播 ----------
@@ -1013,10 +877,11 @@
       if (p && p.catch) p.catch(() => {});
     });
 
-    /* 点「进入」这一下是真实用户激活。这里不走「取消静音」的老路 ——
-       先静音播、再取消静音，在部分移动内核里会被强制暂停，用户听到的就是没声。
+    /* 点「进入」这一下是真实用户激活。这里不走「先静音播、再取消静音」的老路 ——
+       那条路在 iOS Safari / 微信 X5 上经常被内核强制暂停，用户听到的就是没声。
        改成：在手势栈里新建一个从未静音起播过的元素，直接带声 play()。
-       这是各端兼容性最稳的一条路（和「点一下开始放背景音乐」同类）。 */
+       这是各端兼容性最稳的一条路（等于「点一下开始放背景音乐」）。 */
+    let armed = false;
     const enterAudible = () => new Promise(resolve => {
       armed = true;
 
@@ -1029,8 +894,7 @@
 
       let el = null;
       try {
-        /* 依旧用 video 承载 mp3：移动内核里 video 的播放权限比 audio 宽，
-           之前实测过 audio 会被直接拒、video 不会 */
+        /* 依旧用 video 承载 mp3：移动内核里 video 的播放权限比 audio 宽 */
         el = document.createElement('video');
         el.className = 'bgm-media';
         el.src = 'assets/audio/bgm.mp3';
@@ -1063,7 +927,9 @@
             audio.id = 'bgm';
             bindMedia(audio);
             markAudible();                   // 先认定成功，再去停旧元素
-            try { old.pause(); old.remove(); } catch (_) {}
+            swapping = true;                 // 旧元素接下来会因为被暂停而发 pause 事件
+            try { old.__detached = true; old.pause(); old.remove(); } catch (_) {}
+            swapping = false;
           } else {
             markAudible();
           }
@@ -1091,6 +957,12 @@
     window.__bgmEnter = () => enterAudible().then(ok => {
       if (!ok) { showNudge(); bindUnlock(); }
     });
+
+    /* 没走 __bgmEnter 的旧入口也兜一层；已经出声就不重复建元素 */
+    window.addEventListener('site:enter', () => {
+      if (audible || armed) return;
+      window.__bgmEnter();
+    }, { once: true });
   }
 
   /* ==========================================================
@@ -1138,11 +1010,15 @@
 
   function initGate() {
     const gate = $('#gate');
-    /* 2026-10-27：桌面端也保留进入画面。
-       浏览器规定「没有真实用户交互就不许出声」，桌面和手机一样受限，
-       与其让人打开发现没动静、还要自己去找开关，不如用一次点击换确定的音乐：
-       点「进入」那一下必定带声起播，之后整站都听得见。 */
-    if (!gate) {
+    /* 只在触屏设备上放进入画面：鼠标环境本来就允许带声自动播放，
+       多一步点击只是添堵（桌面/触屏笔记本一律走这条） */
+    const touchFirst = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
+    if (!gate || !touchFirst) {
+      if (gate) {
+        document.documentElement.classList.remove('gate-lock');
+        gate.remove();
+      }
       startHeroMotion();
       return;
     }
@@ -1153,14 +1029,10 @@
     const enter = () => {
       if (entered) return;
       entered = true;
-      /* 记一笔：万一之后页面被系统回收重载，别再把人扔回这里 */
-      try { sessionStorage.setItem('driesen:entered', '1'); } catch (_) {}
 
-      /* ① 先归零再出声：两句都是同步的，仍在这次点击的手势栈里；
-         先 seek 再 play，避免出声后立刻跳回 0:00 的那一下 */
-      const bgm = document.getElementById('bgm');
-      if (bgm) { try { bgm.currentTime = 0; } catch (_) {} }
-      if (typeof window.__bgmEnter === 'function') window.__bgmEnter();
+      /* 第一件事：在手势栈里把声音放出来（必须在任何 DOM 操作之前，
+         否则部分内核会认为手势已经用掉了，直接拒绝播放） */
+      if (window.__bgmEnter) window.__bgmEnter();
 
       root.classList.remove('gate-lock');
       gate.classList.add('is-out');
@@ -1194,17 +1066,6 @@
      启动
      ========================================================== */
   function boot() {
-    /* 手机内存吃紧时，系统会把整页回收再自动重载 —— 重载后如果又弹
-       「进入」画面，人会以为自己被踢出去了。之前点过进入就记在
-       sessionStorage，重载直接进站，声音交给常规的点击解锁。 */
-    try {
-      if (sessionStorage.getItem('driesen:entered') === '1') {
-        const g = document.getElementById('gate');
-        if (g) g.remove();
-        document.documentElement.classList.remove('gate-lock');
-      }
-    } catch (_) {}
-
     renderWorks();
     renderDesignNotes();
     initCoverflow();
@@ -1219,11 +1080,9 @@
     initProgress();
     initAudio();
     initAnchors();
-    initImgRetry();
     initRevealFallback();
     initGate();          /* 内部决定首屏动效何时开始（有进入画面就等点击） */
     observe();
-    watchLazy();         /* 章节级按需放图，必须放在全部渲染之后 */
   }
 
   if (document.readyState === 'loading') {

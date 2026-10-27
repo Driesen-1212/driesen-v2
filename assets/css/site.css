@@ -4,21 +4,6 @@
    默认浅色（与参考站一致）；data-theme="dark" 提供暗色版本
    ============================================================ */
 
-/* ---------- 0. 可过渡的强调色 ----------
-   --bg 现在由 JS 按滚动位置**连续插值**（motion.js paintBg），
-   每一帧算出来的就是中间色，所以它不能再带 transition ——
-   否则每帧都会重置一次过渡，颜色永远追不上手指。
-   --accent 仍按章节整段切换，它挂在几十处描边和文字上，
-   逐帧改会让整页重排，所以只给它一个缓动。 */
-@property --accent {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: #6a86ff;
-}
-html {
-  transition: --accent .9s cubic-bezier(.33, 0, .2, 1);
-}
-
 /* ---------- 1. 令牌（暗色固定） ---------- */
 :root {
   --bg: #0e0f13;
@@ -62,12 +47,6 @@ html {
 
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; overflow-x: hidden; }
 
-/* ⛔ 这里曾经写过 html, body { overscroll-behavior-y: contain }，用来掐掉
-   手机「下拉刷新」。实测在 Chrome / Chromium 内核上，只要 html 同时有
-   overflow-x: hidden，这条就会让整页彻底滚不动 —— 滚轮、触摸手势全部无效，
-   只有 JS 的 scrollTo 还能动。表现就是「点进站以后划不动、像卡死」。
-   别再加回来。防重载交给 sessionStorage 记状态（main.js 已经做了）。 */
-
 body {
   font-family: var(--font-cn);
   font-weight: 400;
@@ -75,20 +54,11 @@ body {
   line-height: 1.9;
   color: var(--ink);
   background: var(--bg);
-  /* 底色跟着 JS 逐帧插值走，不加过渡（加了会比卡片慢半拍） */
-  transition: color .4s var(--ease);
+  transition: background .4s var(--ease), color .4s var(--ease);
   overflow-x: hidden;
 }
 
 img { display: block; max-width: 100%; }
-/* 图片现在带 width/height 属性（防塌版、防抖动）。但 height 属性会被当成
-   「height: 1500px」这样的真实样式落地，只要某条 CSS 只写了 width:100%
-   而没写 height，那张图就会被拉成固有高度（cover 一裁，只剩半张脸）。
-   统一把「有固有尺寸的图」的高度打回 auto，让下面的 aspect-ratio / 比例自己算。
-   需要定高的地方（.screens / .cf-card / 头像）都显式写了 height，不受影响。 */
-img[width][height] { height: auto; }
-/* 按需加载的占位是透明 1×1，不会糊；加载完自然出现 */
-img { transition: opacity .4s var(--ease); }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 ul, ol { list-style: none; }
@@ -246,9 +216,14 @@ html.gate-lock .boot { animation-play-state: paused; }
   .gate { transition: none; }
 }
 
-/* 2026-10-27：桌面端也保留进入画面（原先是 hover:hover 时 display:none）。
-   浏览器对桌面和手机一视同仁——没有一次真实交互就不许出声，
-   「鼠标环境能自动带声播放」这个前提是错的。所以统一用一次点击换音乐。 */
+/* 桌面端不要进入画面：鼠标环境本来就允许带声自动播放，
+   多一步点击反而碍事。只在「触屏优先」的设备上出现 */
+@media (hover: hover) and (pointer: fine) {
+  .gate { display: none !important; }
+  html.gate-lock,
+  html.gate-lock body { overflow: auto; }
+  html.gate-lock .boot { animation-play-state: running; }
+}
 
 /* ---------- 3. 等宽标签（全站灵魂，照参考站刻度） ---------- */
 .eyebrow {
@@ -966,166 +941,18 @@ html.gate-lock .boot { animation-play-state: paused; }
 }
 .tbd .eyebrow { margin-bottom: 8px; display: block; }
 
-/* ---------- 14. 页脚（黑场 · 三栏 · 巨型裁切字） ---------- */
-/* 整站是 #0e0f13，页脚再压一层到近黑，靠这一下把页面"落"下来。
-   巨型 DRIESEN 被底边裁掉一截，是这块唯一的装饰，不放图不放装饰线。 */
-.foot {
-  --foot-fade: 300px;
-  position: relative;
-  /* 关键：顶部不从「某种颜色」开始，而是从完全透明开始。
-     上面那层氛围光和底色会一路透进来，到 300px 才落成纯黑——
-     没有台阶，也没有第二种黑。 */
-  background: linear-gradient(180deg,
-    rgba(5, 5, 6, 0) 0,
-    rgba(6, 6, 8, .34) calc(var(--foot-fade) * .32),
-    rgba(5, 5, 6, .74) calc(var(--foot-fade) * .66),
-    #050506 var(--foot-fade));
-  color: #f2f0ea;
-  padding-top: clamp(148px, 20vh, 205px);
-  overflow: hidden;
+/* ---------- 14. 页脚 ---------- */
+.footer { border-top: 1px solid var(--line); padding: 44px 0 52px; }
+.footer-inner { display: flex; align-items: baseline; justify-content: space-between; }
+.script {
+  font-family: var(--font-script);
+  font-size: 30px;
+  color: var(--accent);
 }
-.foot-wrap { position: relative; z-index: 1; width: var(--w); max-width: calc(100% - 48px); margin: 0 auto; }
-
-.foot-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.35fr);
-  gap: 40px;
-  padding-bottom: 44px;
-}
-.foot-col h4 {
-  margin: 0 0 18px;
+.copy {
   font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: .22em;
-  text-transform: uppercase;
-  color: rgba(242, 240, 234, .38);
-}
-.foot-col ul { margin: 0; padding: 0; list-style: none; }
-.foot-col li { margin-bottom: 7px; }
-.foot-col a {
-  display: inline-block;
-  font-size: 15px;
-  letter-spacing: -.005em;
-  color: rgba(242, 240, 234, .76);
-  transition: color .3s var(--ease), transform .4s var(--ease);
-}
-.foot-col a:hover { color: #fff; transform: translateX(4px); }
-.foot-mail {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0;
-  font-size: 15px;
-  color: rgba(242, 240, 234, .76);
-  border-bottom: 1px solid rgba(242, 240, 234, .24);
-  padding-bottom: 3px;
-  transition: color .3s var(--ease), border-color .3s;
-}
-.foot-mail i { font-style: normal; font-size: 12px; margin-left: 2px; }
-.foot-mail:hover { color: #fff; border-color: #f2f0ea; }
-
-/* 那句自己的话：一条宋体，压在栅格和元信息之间，不抢结构 */
-.foot-line {
-  margin: 0 0 32px;
-  max-width: 30em;
-  font-family: var(--font-song);
-  font-size: 15px;
-  line-height: 1.75;
-  color: rgba(242, 240, 234, .42);
-  /* 窄屏折两行时，断点钉在逗号后面，不把「什么样」劈开 */
-  text-wrap: balance;
-}
-/* 两半各自不断开，放不下时整体掉行 —— 断点自然落在逗号后 */
-.foot-line span { display: inline-block; }
-
-.foot-meta {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 10px 34px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(242, 240, 234, .14);
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  color: rgba(242, 240, 234, .34);
-}
-
-/* 负的 margin-bottom 把字往下推，由 .foot 的 overflow 裁掉字脚 */
-.foot-word {
-  position: relative;
-  z-index: 1;
-  margin: 38px 0 -0.12em;
-  font-family: var(--font-cn);
-  font-size: clamp(88px, 17.2vw, 300px);
-  font-weight: 800;
-  line-height: .78;
-  letter-spacing: -.055em;
-  text-align: center;
-  color: #f2f0ea;
-  white-space: nowrap;
-  user-select: none;
-  pointer-events: none;
-}
-
-.to-top {
-  position: absolute;
-  z-index: 2;
-  top: clamp(30px, 4.4vh, 48px);
-  right: max(24px, calc((100% - var(--w)) / 2));
-  width: 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  border: 1px solid rgba(242, 240, 234, .3);
-  font-size: 14px;
-  line-height: 1;
-  color: rgba(242, 240, 234, .86);
-  transition: background-color .35s var(--ease), color .35s, border-color .35s, transform .35s var(--ease);
-}
-.to-top:hover {
-  background: #f2f0ea;
-  color: #08080a;
-  border-color: #f2f0ea;
-  transform: translateY(-2px);
-}
-
-@media (max-width: 900px) {
-  .foot { --foot-fade: 250px; padding-top: 132px; }
-  .foot-grid { grid-template-columns: 1fr 1fr; gap: 34px 22px; padding-bottom: 34px; }
-  .foot-wide { grid-column: 1 / -1; }
-  .foot-word { margin-top: 24px; font-size: 20vw; }
-  /* 离固定导航远一点，否则滚到底时它像贴在菜单图标下面 */
-  .to-top { top: 30px; width: 38px; height: 38px; }
-}
-@media (max-width: 520px) {
-  .foot { padding-top: 80px; --foot-fade: 190px; }
-  /* 和桌面同一套三栏，只收窄字号；绝不要退化成一条竖排长列表 */
-  .foot-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.4fr);
-    gap: 0 14px;
-    padding-bottom: 28px;
-  }
-  .foot-wide { grid-column: auto; }
-  .foot-col h4 { font-size: 8.5px; letter-spacing: .16em; margin-bottom: 12px; }
-  .foot-col a { font-size: 13px; }
-  .foot-col li { margin-bottom: 5px; }
-  /* 第三栏太窄，「· scan the code」会被折成两行 */
-  .fm-extra { display: none; }
-  .foot-mail { font-size: 13px; gap: 4px; }
-  .foot-line { font-size: 14px; margin-bottom: 22px; }
-  .foot-meta { flex-direction: column; gap: 9px; padding-top: 13px; letter-spacing: .13em; }
-  /* 手机端不裁字：line-height 小于行盒高度会把字母下半截切进 overflow 里，
-     看上去像一块半截字。行高放开，再用 padding-bottom 把溢出的那点兜住 */
-  .foot-word { margin-top: 22px; font-size: 23vw; line-height: 1.02; margin-bottom: 0; padding-bottom: .24em; }
-  .to-top { top: 24px; width: 34px; height: 34px; font-size: 12px; }
-}
-/* 320 级别的窄屏塞三栏会把 Selected Work 折成两行，退回两栏更稳 */
-@media (max-width: 360px) {
-  .foot-grid { grid-template-columns: 1fr 1fr; gap: 30px 16px; }
-  .foot-wide { grid-column: 1 / -1; }
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--ink-faint);
 }
 
 /* ---------- 15. Lightbox（恒为暗底，不随主题） ---------- */
@@ -1225,6 +1052,7 @@ html.gate-lock .boot { animation-play-state: paused; }
   .work { padding: 28px 22px 24px; }
   .metrics li { padding-right: 6px; }
   .m-value { font-size: 16px; }
+  .footer-inner { flex-direction: column; gap: 8px; align-items: flex-start; }
   .lb-nav { display: none; }
   .meta-strip { grid-template-columns: 1fr; }
   .frame { flex-basis: 260px; }
@@ -1658,7 +1486,7 @@ html.gate-lock .boot { animation-play-state: paused; }
 
   /* Cover Flow */
   .cf { margin-top: 26px; }
-  .cf-stage { height: 58vh; min-height: 320px; }
+  .cf-stage { height: 54vh; min-height: 300px; }
   .cf-bar { flex-wrap: wrap; gap: 6px 14px; font-size: 9px; letter-spacing: 1.4px; }
   .cf-name { order: 2; flex: 1 1 auto; }
   .cf-hint { order: 3; flex-basis: 100%; margin-left: 0; font-size: 8.5px; }

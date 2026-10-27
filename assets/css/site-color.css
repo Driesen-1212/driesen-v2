@@ -1,0 +1,28 @@
+/* ============================================================
+   site-color.css — 唯一的改动：章节换色
+   ------------------------------------------------------------
+   职责只有一件事：让 --bg / --accent 跟着滚动位置平滑变化。
+   不新增任何视觉元素（没有光斑、没有水印、没有描边带）。
+
+   ⚠️ body 上原有的 `transition: background .4s` 必须去掉：
+      --bg 现在由 JS 逐帧写入，每帧都重启一次过渡，
+      底色会永远追不上滚动位置（表现为「划一下下就色变、顿一下」）。
+   ============================================================ */
+
+/* 强调色做成可插值的自定义属性：切换时自己淡过去，不用逐帧改它。
+   注意 --bg 故意不注册 transition —— 它已经是逐帧插值了。 */
+@property --accent {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #6a86ff;
+}
+
+html { transition: --accent .55s var(--ease); }
+
+/* 只保留文字颜色的过渡，去掉 background 过渡 */
+body { transition: color .4s var(--ease); }
+
+/* 反向兼容：万一浏览器不支持 @property，至少别让 --bg 有过渡 */
+@supports not (background: paint(x)) {
+  body { transition: color .4s var(--ease); }
+}
