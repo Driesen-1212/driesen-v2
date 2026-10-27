@@ -1,0 +1,58 @@
+/* ============================================================
+   site-texture.css — 质感层（只加材质，不动版式）
+   ------------------------------------------------------------
+   三件事，都很轻：
+   1. 全屏极淡胶片颗粒 —— 暗底上一铺，画面立刻从「纯色块」变成「有颗粒的胶片」
+   2. 图片统一 1px 细描边 —— 边缘不再糊在背景里
+   3. 卡片/面板顶部一道微光 —— 不是发光特效，只是让平面有一点厚度
+
+   全部是 CSS 伪元素和阴影，不新增 DOM，删掉本文件即完全复原。
+   ============================================================ */
+
+/* ---------- 1. 胶片颗粒 ---------- */
+/* fixed 层，不随滚动位移，所以滚动时不需要重绘；pointer-events 关掉不挡点击。
+   颗粒用纯白噪点 + 极低透明度叠加：比 mix-blend-mode 省一层合成，移动端不卡 */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  pointer-events: none;
+  opacity: .042;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxODAnIGhlaWdodD0nMTgwJz48ZmlsdGVyIGlkPSduJz48ZmVUdXJidWxlbmNlIHR5cGU9J2ZyYWN0YWxOb2lzZScgYmFzZUZyZXF1ZW5jeT0nLjgyJyBudW1PY3RhdmVzPSczJyBzdGl0Y2hUaWxlcz0nc3RpdGNoJy8+PGZlQ29sb3JNYXRyaXggdHlwZT0nc2F0dXJhdGUnIHZhbHVlcz0nMCcvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPScxODAnIGhlaWdodD0nMTgwJyBmaWx0ZXI9J3VybCgjbiknLz48L3N2Zz4=");
+  background-size: 180px 180px;
+}
+
+/* ---------- 2. 图片细描边 ---------- */
+/* 用外阴影而不是 border：不占布局，不会把图片挤出容器 */
+.photo img,
+.cf-card img,
+.char-card img,
+.frame img,
+.portrait-card img {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .085);
+}
+
+/* 摄影作品再压一点点对比，暗部更沉，跟胶片颗粒配得上 */
+.photo img,
+.cf-card img {
+  filter: saturate(.94) contrast(1.03);
+}
+
+/* ---------- 3. 卡片的厚度 ---------- */
+/* 只在顶部铺一道几乎看不见的高光。深色界面上，这一道就够让平面「立起来」 */
+.tile,
+.stat,
+.channel {
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, .032), rgba(255, 255, 255, 0) 46%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .055);
+}
+
+/* 分隔线也一样：从「一条死线」变成「有渐变的两端淡出」 */
+main .section {
+  border-top-color: transparent;
+  background-image: linear-gradient(90deg, transparent, rgba(236, 234, 226, .16) 18%, rgba(236, 234, 226, .16) 82%, transparent);
+  background-repeat: no-repeat;
+  background-size: 100% 1px;
+  background-position: top;
+}

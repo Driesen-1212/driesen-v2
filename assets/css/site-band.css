@@ -17,8 +17,8 @@
 .band {
   position: relative;
   overflow: hidden;
-  height: clamp(56px, 8.2vw, 104px);
-  margin-bottom: 44px;
+  height: clamp(74px, 14vw, 172px);
+  margin-bottom: 52px;
   /* 从容器里挣脱出来，横贯整个视口 —— 像一块章节隔断 */
   margin-inline: calc(50% - 50vw);
   border-top: 1px solid var(--line);
@@ -47,14 +47,14 @@
 .band-run span {
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: clamp(38px, 7vw, 92px);
+  font-size: clamp(52px, 10.5vw, 140px);
   line-height: 1;
   letter-spacing: .012em;
   text-transform: uppercase;
   white-space: nowrap;
   padding-right: .36em;
   color: transparent;
-  -webkit-text-stroke: 1px var(--line-strong);
+  -webkit-text-stroke: clamp(1px, .13vw, 1.6px) var(--line-strong);
 }
 
 /* 奇偶交替：描边 / 极淡实心。带子跟着章节换色，实心那半会沾上当前强调色 */

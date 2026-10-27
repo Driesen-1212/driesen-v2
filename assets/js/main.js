@@ -54,7 +54,7 @@
     host.classList.add('photo-grid--fallback');
     host.innerHTML = window.PHOTOS.map((p, gi) => `
       <figure class="photo reveal" data-i="${gi}" tabindex="0" role="button" aria-label="查看 ${p.cn}">
-        <img src="assets/photos/${p.f}" alt="${p.cn} · ${p.en}" loading="lazy" decoding="async" />
+        <img src="assets/photos/thumbs/${p.f}" alt="${p.cn} · ${p.en}" loading="lazy" decoding="async" />
         <figcaption>
           <span class="p-num">${p.n} / ${p.cat}</span>
           <span class="p-cn">${p.cn}</span>
@@ -90,7 +90,9 @@
     const items = window.PHOTOS.map((p, i) => {
       const fig = document.createElement('figure');
       fig.className = 'cf-item';
-      fig.innerHTML = `<div class="cf-card"><img src="assets/photos/${p.f}" alt="${p.cn} · ${p.en}" draggable="false" decoding="async" /></div>`;
+      /* 唱片架不用懒加载：卡片靠 3D transform 摆位，懒加载会让拖到一半才出图；
+         这里已经换成 thumbs 小图（约 1MB），一次拉齐，拖动永远有图 */
+      fig.innerHTML = `<div class="cf-card"><img src="assets/photos/thumbs/${p.f}" alt="${p.cn} · ${p.en}" draggable="false" decoding="async" /></div>`;
       stage.appendChild(fig);
       return { fig, img: fig.querySelector('img'), p, i, w: 0 };
     });
@@ -322,7 +324,7 @@
       const g = window.SCREENS.find(x => x.key === key);
       body.innerHTML = `<div class="screens">${g.files.map((f, i) => `
         <figure class="reveal" style="--d:${Math.min(i, 8) * 0.04}s">
-          <img src="assets/${f}" alt="Style ${g.label} · Screen ${i + 1}" decoding="async" />
+          <img src="assets/${f}" alt="Style ${g.label} · Screen ${i + 1}" loading="lazy" decoding="async" />
         </figure>`).join('')}</div>`;
       makeDraggable(body.firstElementChild);
       observe();
@@ -345,7 +347,7 @@
     if (!host || !window.CHARACTERS) return;
     host.innerHTML = window.CHARACTERS.slice(0, 4).map((c, i) => `
       <figure class="char-card" style="--d:${i * 0.05}s">
-        <img src="assets/char/${c.f}" alt="${c.label}" decoding="async" />
+        <img src="assets/char/${c.f}" alt="${c.label}" loading="lazy" decoding="async" />
         <figcaption>${c.label}</figcaption>
       </figure>
     `).join('');
@@ -356,7 +358,7 @@
     if (!host || !window.AWAKEN) return;
     host.innerHTML = window.AWAKEN.map((f, i) => `
       <figure class="reveal" style="--d:${Math.min(i, 11) * 0.03}s">
-        <img src="assets/sb/${f.f}" alt="Frame ${f.n} · ${f.cn}" decoding="async" />
+        <img src="assets/sb/${f.f}" alt="Frame ${f.n} · ${f.cn}" loading="lazy" decoding="async" />
         <figcaption>
           <span class="f-num">${f.n}</span>
           <span class="f-cn">${f.cn}</span>
@@ -371,7 +373,7 @@
     if (!host || !window.FRAMES) return;
     host.innerHTML = window.FRAMES.map((f, i) => `
       <figure class="reveal" style="--d:${Math.min(i, 11) * 0.04}s">
-        <img src="assets/frames-grid/${f.f}" alt="Frame ${f.n} · ${f.cn}" decoding="async" />
+        <img src="assets/frames-grid/${f.f}" alt="Frame ${f.n} · ${f.cn}" loading="lazy" decoding="async" />
         <figcaption>
           <span class="f-num">${f.n}</span>
           <span class="f-cn">${f.cn}</span>
@@ -412,7 +414,7 @@
     if (!host || !window.ALBUM) return;
     host.innerHTML = window.ALBUM.pages.map((f, i) => `
       <figure class="album-page${i === 0 ? ' is-cover' : ''}" style="--d:${Math.min(i, 10) * 0.04}s">
-        <img src="assets/${f}" alt="${window.ALBUM.title} · Page ${i + 1}" decoding="async" />
+        <img src="assets/${f}" alt="${window.ALBUM.title} · Page ${i + 1}" loading="lazy" decoding="async" />
       </figure>
     `).join('');
   }
