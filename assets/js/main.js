@@ -10,6 +10,14 @@
   const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
   const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* 真实触屏能力检测：综合媒体查询 + 实际触屏能力。
+     不再单独依赖 (hover/pointer) 媒体查询——部分国产浏览器内核（vivo 等自带浏览器）
+     会把它误报成桌面，导致进入界面 gate 被隐藏、背景音乐无法在手势内启动 */
+  const isTouchDevice = () =>
+    ('ontouchstart' in window) ||
+    (navigator.maxTouchPoints > 0) ||
+    window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
   /* ==========================================================
      1. 产品开发 — PRD 结构（复刻参考站案例卡）
      ========================================================== */
@@ -82,7 +90,7 @@
     const countEl = $('#cfCount');
     const nameEl = $('#cfName');
     const hintEl = $('.cf-hint');
-    if (hintEl && window.matchMedia('(hover: none)').matches) {
+    if (hintEl && isTouchDevice()) {
       hintEl.textContent = '左右滑动切换 · 点中间那张看大图';
     }
     const N = window.PHOTOS.length;
@@ -637,7 +645,7 @@
     /* 进入画面还在场时，任何轻触/滑动都不该把声音放出来；
        只有 Enter 按钮那一次点击算数（与 initGate 的判定保持一致） */
     const gateUp = () => !!document.getElementById('gate');
-    const gateFirst = gateUp() && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+    const gateFirst = gateUp() && isTouchDevice();
 
     /* UI 一律从元素真实状态推导，避免「显示在播其实没声」 */
     const refresh = () => {
@@ -1014,7 +1022,7 @@
     const gate = $('#gate');
     /* 只在触屏设备上放进入画面：鼠标环境本来就允许带声自动播放，
        多一步点击只是添堵（桌面/触屏笔记本一律走这条） */
-    const touchFirst = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+    const touchFirst = isTouchDevice();
 
     if (!gate || !touchFirst) {
       if (gate) {

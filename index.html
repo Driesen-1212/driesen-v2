@@ -11,11 +11,22 @@
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="theme-color" content="#f5f5f5" />
 
+<script>
+  /* 进入界面(gate)显隐：在 body 解析前判断真实触屏能力，非触屏加 .no-gate。
+     综合 ontouchstart / maxTouchPoints / 媒体查询，避免国产浏览器误报成桌面
+     导致进入界面消失、背景音乐无法在手势内启动 */
+  (function () {
+    var touch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) ||
+      window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+    if (!touch) document.documentElement.classList.add('no-gate');
+  })();
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Caveat:wght@400;500&family=JetBrains+Mono:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230e0f13'/%3E%3Ctext x='16' y='22' font-family='Georgia,serif' font-size='18' fill='%236a86ff' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E" />
-<link rel="stylesheet" href="assets/css/site.css?v=20261026g" />
+<link rel="stylesheet" href="assets/css/site.css?v=20261026h" />
 <!-- 改动一：章节换色（删掉这一行 + 下面那行 script 即完全回到原样） -->
 <link rel="stylesheet" href="assets/css/site-color.css?v=20261027b" />
 <!-- 改动二：章节滚动横幅（删掉这一行 + 对应 script 即完全移除） -->
@@ -444,7 +455,7 @@
 </div>
 
 <script src="assets/js/data.js?v=20261026f"></script>
-<script src="assets/js/main.js?v=20261027r"></script>
+<script src="assets/js/main.js?v=20261027s"></script>
 <script src="assets/js/site-color.js?v=20261027d"></script>
 <script src="assets/js/site-band.js?v=20261027c"></script>
 </body>

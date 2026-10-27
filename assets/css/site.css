@@ -217,13 +217,13 @@ html.gate-lock .boot { animation-play-state: paused; }
 }
 
 /* 桌面端不要进入画面：鼠标环境本来就允许带声自动播放，
-   多一步点击反而碍事。只在「触屏优先」的设备上出现 */
-@media (hover: hover) and (pointer: fine) {
-  .gate { display: none !important; }
-  html.gate-lock,
-  html.gate-lock body { overflow: auto; }
-  html.gate-lock .boot { animation-play-state: running; }
-}
+   多一步点击反而碍事。是否触屏由 JS 在 <head> 内联检测后给 <html> 加 .no-gate 决定，
+   不再依赖浏览器可能误报的 (hover/pointer) 媒体查询（部分国产浏览器内核会误判成桌面，
+   导致进入界面消失、背景音乐无法启动） */
+html.no-gate .gate { display: none !important; }
+html.no-gate.gate-lock,
+html.no-gate.gate-lock body { overflow: auto; }
+html.no-gate.gate-lock .boot { animation-play-state: running; }
 
 /* ---------- 3. 等宽标签（全站灵魂，照参考站刻度） ---------- */
 .eyebrow {
