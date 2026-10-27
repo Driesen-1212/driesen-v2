@@ -4,25 +4,24 @@
    职责只有一件事：让 --bg / --accent 跟着滚动位置平滑变化。
    不新增任何视觉元素（没有光斑、没有水印、没有描边带）。
 
+   两个「过渡」都必须交给 JS，CSS 这边不许再插一脚：
+
    ⚠️ body 上原有的 `transition: background .4s` 必须去掉：
       --bg 现在由 JS 逐帧写入，每帧都重启一次过渡，
-      底色会永远追不上滚动位置（表现为「划一下下就色变、顿一下」）。
+      底色会永远追不上滚动位置（表现为「划一下色变一下、还顿」）。
+
+   ⚠️ --accent 也不再做 CSS transition：
+      它是逐帧混出来的连续色，再叠 .55s 过渡只会慢半拍，
+      换章时反而像「先不动、然后突然追上」。
    ============================================================ */
 
-/* 强调色做成可插值的自定义属性：切换时自己淡过去，不用逐帧改它。
-   注意 --bg 故意不注册 transition —— 它已经是逐帧插值了。 */
+/* 注册成 color 类型，让 color-mix(in srgb, var(--accent) ...) 在
+   各浏览器里都能立刻拿到合法颜色（不注册时要等字符串写完才算数） */
 @property --accent {
   syntax: '<color>';
   inherits: true;
   initial-value: #6a86ff;
 }
 
-html { transition: --accent .55s var(--ease); }
-
-/* 只保留文字颜色的过渡，去掉 background 过渡 */
+/* 只保留文字颜色的过渡；background 与 --accent 都归 JS 管 */
 body { transition: color .4s var(--ease); }
-
-/* 反向兼容：万一浏览器不支持 @property，至少别让 --bg 有过渡 */
-@supports not (background: paint(x)) {
-  body { transition: color .4s var(--ease); }
-}
