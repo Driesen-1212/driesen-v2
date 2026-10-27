@@ -1,9 +1,14 @@
 /* ============================================================
    site-band.css — 章节滚动横幅（描边巨字）
    ------------------------------------------------------------
-   每个 .section 开头一条横贯视口的字带，无限左移。
+   每个 .section 开头一条横贯视口的字带，无限左移 + 缓慢呼吸。
    文字取自该章节的 .eyebrow（"01 — ABOUT" → "ABOUT"），
    也可以在 <section data-band="CUSTOM TEXT"> 上自己指定。
+
+   为什么位移交给 JS 而不是 CSS animation：
+   「呼吸感」要的是速度起伏（快一点、慢一点），CSS 只能恒速。
+   JS 逐帧按正弦速度推进，同时把 --bh（0..1 的呼吸相位）写给 CSS，
+   明暗和微缩放跟着一起起伏。离屏整条暂停，不白耗电。
 
    独立性：不依赖 main.js / motion.css / site-color.js。
    删掉这个文件和 index.html 里两行引用即可完全移除。
@@ -27,8 +32,10 @@
   display: flex;
   width: max-content;
   height: 100%;
-  /* JS 按「恒速 62px/s」算出时长写进 --dur；改宽度时不会突然变快变慢 */
-  animation: band-run var(--dur, 46s) linear infinite;
+  transform-origin: center;
+  will-change: transform, opacity;
+  /* --bh 由 JS 每帧写入：0 = 呼尽，1 = 吸满 */
+  opacity: calc(.74 + .26 * var(--bh, 1));
 }
 
 .band-run {
@@ -54,13 +61,11 @@
 .band-run span:nth-child(even) {
   color: color-mix(in srgb, var(--accent) 15%, transparent);
   -webkit-text-stroke: 0;
+  /* 实心那半跟描边错开相位：描边最亮的时刻，实心最淡 */
+  opacity: calc(.58 + .42 * (1 - var(--bh, 1)));
 }
 
-@keyframes band-run {
-  to { transform: translate3d(-50%, 0, 0); }
-}
-
-/* 离屏时由 JS 设 animationPlayState=paused，这里只管「不动就彻底不动」 */
+/* 不能动的时候：停在呼吸的中点，位置由 JS 定在 0 */
 @media (prefers-reduced-motion: reduce) {
-  .band-track { animation: none; }
+  .band-track { opacity: .9; }
 }
